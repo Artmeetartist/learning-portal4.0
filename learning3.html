@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en" class="dark"> <!-- Default to dark mode -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Learning Roadmap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Monaco Editor Loader -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.41.0/min/vs/loader.js"></script>
+    <style>
+        :root {
+            --bg-primary: #111827; /* gray-900 */
+            --bg-secondary: #1f2937; /* gray-800 */
+            --bg-tertiary: #374151; /* gray-700 */
+            --text-primary: #f9fafb; /* gray-50 */
+            --text-secondary: #d1d5db; /* gray-300 */
+            --accent-primary: #22d3ee; /* cyan-400 */
+            --accent-secondary: #06b6d4; /* cyan-500 */
+            --border-color: #4b5563; /* gray-600 */
+            --correct-color: #10B981; /* green-500 */
+            --incorrect-color: #EF4444; /* red-500 */
+        }
+
+        html:not(.dark) {
+            --bg-primary: #f9fafb; /* gray-50 */
+            --bg-secondary: #ffffff; /* white */
+            --bg-tertiary: #f3f4f6; /* gray-100 */
+            --text-primary: #111827; /* gray-900 */
+            --text-secondary: #374151; /* gray-700 */
+            --accent-primary: #0e7490; /* cyan-700 */
+            --accent-secondary: #0891b2; /* cyan-600 */
+            --border-color: #e5e7eb; /* gray-200 */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Custom styles for dynamic themeing */
+        .bg-primary { background-color: var(--bg-primary); }
+        .bg-secondary { background-color: var(--bg-secondary); }
+        .bg-tertiary { background-color: var(--bg-tertiary); }
+        .text-primary { color: var(--text-primary); }
+        .text-secondary { color: var(--text-secondary); }
+        .text-accent { color: var(--accent-primary); }
+        .border-themed { border-color: var(--border-color); }
+        .hover-bg-tertiary:hover { background-color: var(--bg-tertiary); }
+        .hover-border-accent:hover { border-color: var(--accent-secondary); }
+
+        .roadmap-item:not(:last-child)::after {
+            content: ''; position: absolute; left: 50%; top: 100%;
+            width: 2px; height: 2rem; background-color: var(--border-color);
+            transform: translateX(-50%);
+        }
+        @media (min-width: 768px) {
+            .md-road-branch::before {
+                content: ''; position: absolute; top: 50%; right: 100%;
+                width: 2rem; height: 2px; background-color: var(--border-color);
+            }
+        }
+        .tech-button { transition: all 0.3s ease; }
+        .tech-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(34, 211, 238, 0.1);
+        }
+        .quiz-option.correct { background-color: var(--correct-color) !important; color: white !important; }
+        .quiz-option.incorrect { background-color: var(--incorrect-color) !important; color: white !important; }
+        .quiz-option[disabled] { cursor: not-allowed; }
+
+        /* Animation Styles */
+        .feedback-animation { animation: zoomIn 0.5s ease-out; }
+        .feedback-animation.incorrect-anim { animation: shake 0.5s ease-in-out; }
+        
+        @keyframes zoomIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        /* Progress Indicator Styles */
+        .progress-indicator {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .topic-completed .progress-indicator {
+            background-color: var(--correct-color);
+            border-color: var(--correct-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app" class="container mx-auto p-4 md:p-8">
+        <!-- Main Content -->
+        <main id="mainContent">
+            <!-- Header -->
+            <header class="text-center mb-12 relative">
+                <h1 class="text-4xl md:text-5xl font-bold text-accent">Interactive Learning Roadmap</h1>
+                <p class="text-secondary mt-2">Powered by <span class="font-semibold text-accent">DeeCode</span></p>
+                <div id="userInfo" class="absolute top-0 left-0 text-left text-xs hidden">
+                    <p id="user-greeting" class="text-secondary"></p>
+                    <button id="signOutBtn" class="text-xs text-accent hover:underline">Sign Out</button>
+                </div>
+                <button id="themeToggle" class="absolute top-0 right-0 p-2 rounded-full hover-bg-tertiary">
+                    <svg id="theme-icon-light" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                    <svg id="theme-icon-dark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                </button>
+            </header>
+
+            <!-- Technology Selection Screen -->
+            <div id="techSelection" class="max-w-4xl mx-auto">
+                <h2 class="text-2xl font-bold text-center mb-8">Choose Your Learning Path</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            </div>
+
+            <!-- Roadmap Container -->
+            <div id="roadmapContainer" class="hidden">
+                 <button id="backButton" class="mb-8 bg-tertiary hover:bg-cyan-600 font-bold py-2 px-4 rounded-lg transition-colors">&larr; Back to Topics</button>
+                <div id="roadmapContent"></div>
+            </div>
+        </main>
+        
+        <!-- Modals and Overlays -->
+        <div id="loader" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center hidden">
+             <div class="text-center">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-cyan-500"></div>
+                <p id="loaderText" class="mt-4 text-white">Generating your learning path...</p>
+            </div>
+        </div>
+        <div id="errorMessage" class="hidden fixed bottom-5 right-5 max-w-sm bg-red-900/80 border border-red-700 text-red-300 px-4 py-3 rounded-lg z-50"></div>
+        <div id="contentModal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-40 flex justify-center items-center p-4">
+            <div id="modal-container" class="bg-secondary rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col transition-all duration-300">
+                <div class="flex justify-between items-center p-4 border-t border-b border-themed">
+                    <h2 id="modalTitle" class="text-2xl font-bold text-accent"></h2>
+                    <div class="flex items-center gap-4">
+                        <button id="markCompleteBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors text-sm">Mark as Complete</button>
+                        <button id="closeModal" class="text-secondary hover:text-primary text-3xl leading-none">&times;</button>
+                    </div>
+                </div>
+                <div class="flex border-b border-themed">
+                    <button id="conceptTab" class="flex-1 p-3 bg-tertiary text-primary font-semibold">Concept</button>
+                    <button id="practiceTab" class="flex-1 p-3 text-secondary font-semibold">Practice IDE</button>
+                    <button id="quizTab" class="flex-1 p-3 text-secondary font-semibold">Quiz</button>
+                </div>
+                <div id="modalContent" class="p-6 overflow-y-auto flex-grow"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signOut, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // DOM Elements
+        const themeToggle = document.getElementById('themeToggle');
+        const mainContent = document.getElementById('mainContent');
+        const userInfo = document.getElementById('userInfo');
+        const userGreeting = document.getElementById('user-greeting');
+        const signOutBtn = document.getElementById('signOutBtn');
+        const techSelection = document.getElementById('techSelection');
+        const loader = document.getElementById('loader');
+        const loaderText = document.getElementById('loaderText');
+        const errorMessage = document.getElementById('errorMessage');
+        const roadmapContainer = document.getElementById('roadmapContainer');
+        const roadmapContent = document.getElementById('roadmapContent');
+        const backButton = document.getElementById('backButton');
+        const contentModal = document.getElementById('contentModal');
+        const modalContainer = document.getElementById('modal-container');
+        const modalTitle = document.getElementById('modalTitle');
+        const closeModalButton = document.getElementById('closeModal');
+        const conceptTab = document.getElementById('conceptTab');
+        const practiceTab = document.getElementById('practiceTab');
+        const quizTab = document.getElementById('quizTab');
+        const modalContent = document.getElementById('modalContent');
+        const markCompleteBtn = document.getElementById('markCompleteBtn');
+
+        // App State
+        let apiKey = 'AIzaSyARgzlaxZw5rOteontqeylbRgca4jOKhFc';
+        let currentTopic = null;
+        let currentTechnology = null;
+        let monacoEditorInstance = null;
+        let currentTopicCache = {};
+        let quizState = { questions: [], currentQuestionIndex: 0, score: 0, userAnswers: [] };
+        let progress = {};
+        let currentRoadmapData = [];
+        let userId = null;
+        let db, auth;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        const technologies = {
+            'HTML': "Generate a comprehensive HTML learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Basic Structure, Tags, Forms, and Semantic HTML.",
+            'CSS': "Generate a comprehensive CSS learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Selectors, Box Model, Flexbox, Grid, and Responsive Design.",
+            'JavaScript': "Generate a comprehensive JavaScript learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include at least 5 main topics like 'JavaScript Fundamentals', 'DOM Manipulation', 'Asynchronous JavaScript', etc.",
+            'TypeScript': "Generate a comprehensive TypeScript learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Basic Types, Interfaces, Classes, Generics, and Modules.",
+            'React': "Generate a comprehensive React learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like JSX, Components, State & Props, Hooks, and State Management.",
+            'Redux': "Generate a comprehensive Redux learning roadmap for state management with React. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Core Concepts (Actions, Reducers, Store), React Redux, Async Actions (Thunk/Saga), and Redux Toolkit.",
+            'Node.js': "Generate a comprehensive Node.js learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Node.js Runtime, Modules, File System, HTTP Server, and Event Loop.",
+            'Express.js': "Generate a comprehensive Express.js learning roadmap for building web applications with Node.js. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Routing, Middleware, Request & Response objects, and Template Engines.",
+            'SQL': "Generate a comprehensive SQL learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Basic Queries (SELECT, FROM, WHERE), Joins, Aggregation, Subqueries, and Data Definition Language (DDL).",
+            'MySQL': "Generate a comprehensive MySQL learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Installation, Data Types, CRUD Operations, Indexing, and Stored Procedures.",
+            'MongoDB': "Generate a comprehensive MongoDB learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Documents & Collections, CRUD Operations, Indexing, Aggregation Framework, and Mongoose.",
+            'API': "Generate a comprehensive API design and development roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like REST vs GraphQL, API Design Principles, Authentication, and Documentation.",
+            'System Design': "Generate a comprehensive System Design learning roadmap for software engineering interviews. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Scalability, Caching, Databases, Load Balancing, and Microservices.",
+            'Interview Prep': "Generate a comprehensive technical interview preparation roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Data Structures & Algorithms, Behavioral Questions, System Design, and Company-Specific Research.",
+            'Python': "Generate a comprehensive Python learning roadmap for a beginner. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Basic Syntax, Data Structures, Functions, OOP, and popular libraries.",
+            'DSA': "Generate a comprehensive Data Structures and Algorithms roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Arrays, Linked Lists, Stacks, Queues, Trees, Graphs, Sorting, and Searching algorithms.",
+            'AI': "Generate a comprehensive Artificial Intelligence learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Search Algorithms, Knowledge Representation, and AI Ethics.",
+            'ML': "Generate a comprehensive Machine Learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Supervised Learning, Unsupervised Learning, Deep Learning, and Model Evaluation.",
+            'NLP': "Generate a comprehensive Natural Language Processing roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Text Preprocessing, Language Models, and Sentiment Analysis.",
+            'Cloud Computing': "Generate a comprehensive Cloud Computing roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like IaaS, PaaS, SaaS, Virtualization, and major cloud providers (AWS, Azure, GCP).",
+            'DevOps': "Generate a comprehensive DevOps roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like CI/CD, Infrastructure as Code, Containerization (Docker, Kubernetes), and Monitoring.",
+            'Data Science': "Generate a comprehensive Data Science roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Data Wrangling, Exploratory Data Analysis, Machine Learning, and Data Visualization.",
+            'Data Analytics': "Generate a comprehensive Data Analytics roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Data Collection, SQL, Statistical Analysis, and BI Tools (Tableau, Power BI).",
+            'Cybersecurity': "Generate a comprehensive Cybersecurity roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Network Security, Cryptography, Web Security, and Incident Response.",
+            'Ethical Hacking': "Generate a comprehensive Ethical Hacking roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Reconnaissance, Scanning, Gaining Access, and Maintaining Access.",
+            'AI & Automation': "Generate a comprehensive AI & Automation roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Robotic Process Automation (RPA), AI-powered workflows, and intelligent automation tools."
+        };
+
+        // --- Firebase Setup ---
+        function initializeFirebase() {
+            try {
+                if (typeof __firebase_config === 'undefined' || !__firebase_config) {
+                    throw new Error("Firebase config not provided.");
+                }
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                handleAuthentication();
+            } catch (e) {
+                console.error("Firebase initialization error:", e);
+                showError("Could not connect to the cloud. Progress will not be saved.");
+                mainContent.classList.remove('hidden');
+            }
+        }
+
+        // --- Authentication ---
+        async function handleAuthentication() {
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    await startApp(user);
+                } else {
+                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        try {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } catch (error) {
+                            console.error("Custom token sign-in failed, falling back to anonymous:", error);
+                            await signInAnonymously(auth);
+                        }
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                }
+            });
+        }
+
+        async function startApp(user) {
+            userId = user.uid;
+            userGreeting.textContent = user.isAnonymous ? `Welcome, Guest!` : `Welcome, ${user.displayName || 'User'}!`;
+            userInfo.classList.remove('hidden');
+            await loadProgress(userId);
+            mainContent.classList.remove('hidden');
+        }
+
+        signOutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                window.location.reload();
+            });
+        });
+
+        // --- Progress Management ---
+        async function loadProgress(uid) {
+            const docRef = doc(db, "artifacts", appId, "users", uid, "progress", "data");
+            try {
+                const docSnap = await getDoc(docRef);
+                progress = docSnap.exists() ? docSnap.data() : {};
+            } catch (e) {
+                console.error("Error loading progress:", e);
+                progress = {};
+            }
+        }
+
+        async function saveProgress() {
+            if (!userId || !db) return;
+            const docRef = doc(db, "artifacts", appId, "users", userId, "progress", "data");
+            try {
+                await setDoc(docRef, progress);
+            } catch (e) {
+                console.error("Error saving progress:", e);
+                showError("Could not save progress to the cloud.");
+            }
+        }
+
+        const handleMarkAsComplete = () => {
+            if (!progress[currentTechnology]) {
+                progress[currentTechnology] = [];
+            }
+            if (!progress[currentTechnology].includes(currentTopic)) {
+                progress[currentTechnology].push(currentTopic);
+                saveProgress();
+                updateMarkCompleteButton();
+                renderRoadmap(currentRoadmapData);
+            }
+        };
+
+        const updateMarkCompleteButton = () => {
+            const isCompleted = progress[currentTechnology]?.includes(currentTopic);
+            if (isCompleted) {
+                markCompleteBtn.textContent = 'Completed ✔';
+                markCompleteBtn.disabled = true;
+                markCompleteBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                markCompleteBtn.classList.add('bg-gray-500', 'cursor-not-allowed');
+            } else {
+                markCompleteBtn.textContent = 'Mark as Complete';
+                markCompleteBtn.disabled = false;
+                markCompleteBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                markCompleteBtn.classList.remove('bg-gray-500', 'cursor-not-allowed');
+            }
+        };
+        
+        // --- Theme Management ---
+        const applyTheme = (theme) => {
+            const isDark = theme === 'dark';
+            document.documentElement.classList.toggle('dark', isDark);
+            document.getElementById('theme-icon-light').classList.toggle('hidden', isDark);
+            document.getElementById('theme-icon-dark').classList.toggle('hidden', !isDark);
+        };
+
+        const handleThemeToggle = () => {
+            const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+            if (monacoEditorInstance) {
+                monaco.editor.setTheme(newTheme === 'dark' ? 'vs-dark' : 'vs');
+            }
+        };
+
+        // --- API Communication ---
+        async function fetchWithExponentialBackoff(prompt, isJson = false) {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }], generationConfig: {} };
+            if (isJson) payload.generationConfig.responseMimeType = "application/json";
+
+            let retries = 3, delay = 1000;
+            while (retries > 0) {
+                try {
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    if (!response.ok) {
+                        const errorBody = await response.json();
+                        throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorBody.error?.message || 'Unknown error'}`);
+                    }
+                    const result = await response.json();
+                    if (result.candidates && result.candidates[0].content.parts.length > 0) {
+                        let content = result.candidates[0].content.parts[0].text;
+                        if (isJson) {
+                             // Robust JSON parsing
+                            const jsonStartIndex = content.indexOf('[');
+                            const jsonEndIndex = content.lastIndexOf(']');
+                            const jsonStartIndexObj = content.indexOf('{');
+                            const jsonEndIndexObj = content.lastIndexOf('}');
+                            let start = -1, end = -1;
+                            if (jsonStartIndex !== -1 && jsonEndIndex !== -1) {
+                                start = jsonStartIndex;
+                                end = jsonEndIndex + 1;
+                            } else if (jsonStartIndexObj !== -1 && jsonEndIndexObj !== -1) {
+                                start = jsonStartIndexObj;
+                                end = jsonEndIndexObj + 1;
+                            }
+                            if (start !== -1) {
+                                const jsonString = content.substring(start, end);
+                                try {
+                                    return JSON.parse(jsonString);
+                                } catch (e) {
+                                    console.error("Failed to parse extracted JSON:", jsonString, e);
+                                    throw new Error("API returned invalid JSON content.");
+                                }
+                            }
+                            throw new Error("No valid JSON array or object found in API response.");
+                        }
+                        return content;
+                    } else {
+                        if (result.promptFeedback && result.promptFeedback.blockReason) throw new Error(`API call blocked: ${result.promptFeedback.blockReason}`);
+                        throw new Error("No content received from API.");
+                    }
+                } catch (error) {
+                    console.error(`Attempt failed: ${error.message}`);
+                    retries--;
+                    if (retries === 0) throw error;
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
+        // --- UI Rendering & Notifications ---
+        function showLoader(show, text = 'Generating content...') { 
+            loaderText.textContent = text;
+            loader.classList.toggle('hidden', !show);
+        }
+        function showError(message) { 
+            errorMessage.textContent = `Error: ${message}`;
+            errorMessage.classList.remove('hidden');
+            setTimeout(() => errorMessage.classList.add('hidden'), 5000);
+        }
+        
+        function renderTechSelection() {
+            const container = techSelection.querySelector('.grid');
+            container.innerHTML = Object.keys(technologies).map(tech => `
+                <button data-tech="${tech}" class="tech-button bg-secondary border border-themed rounded-lg p-6 text-center hover-bg-tertiary hover-border-accent">
+                    <h3 class="text-xl font-bold text-accent">${tech}</h3>
+                </button>
+            `).join('');
+        }
+        
+        function renderRoadmap(topics) {
+            currentRoadmapData = topics;
+            roadmapContent.innerHTML = '';
+            if (!topics || !Array.isArray(topics) || topics.length === 0) {
+                roadmapContent.innerHTML = `<p class="text-secondary text-center">Could not generate a valid roadmap. Please try again.</p>`;
+                return;
+            }
+            const mainPath = document.createElement('div');
+            mainPath.className = 'relative flex flex-col items-center';
+            const completedForLang = progress[currentTechnology] || [];
+
+            topics.forEach(topic => {
+                if (topic && topic.title) {
+                    const isCompleted = completedForLang.includes(topic.title);
+                    const item = createRoadmapItem(topic.title, true, isCompleted);
+                    mainPath.appendChild(item);
+
+                    if (topic.subtopics && Array.isArray(topic.subtopics) && topic.subtopics.length > 0) {
+                        const subtopicContainer = document.createElement('div');
+                        subtopicContainer.className = 'relative md:pl-8 lg:pl-16 mt-4 w-full flex flex-col md:items-start';
+                        
+                        topic.subtopics.forEach(subtopic => {
+                            if (subtopic) {
+                                const isSubCompleted = completedForLang.includes(subtopic);
+                                const subItem = createRoadmapItem(subtopic, false, isSubCompleted);
+                                subtopicContainer.appendChild(subItem);
+                            }
+                        });
+                        mainPath.appendChild(subtopicContainer);
+                    }
+                }
+            });
+            roadmapContent.appendChild(mainPath);
+        }
+
+        function createRoadmapItem(title, isMainTopic, isCompleted) {
+            const item = document.createElement('div');
+            item.className = `roadmap-item relative my-4 ${isCompleted ? 'topic-completed' : ''}`;
+            
+            const button = document.createElement('button');
+            const buttonBaseClass = 'flex items-center gap-3 text-left transition-all duration-300 transform hover:scale-105';
+            const mainTopicClass = 'bg-tertiary text-accent border-2 border-accent font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-accent hover:text-primary';
+            const subTopicClass = 'md-road-branch bg-secondary text-secondary border border-themed py-2 px-4 rounded-md hover-bg-tertiary hover-border-accent';
+            button.className = `${buttonBaseClass} ${isMainTopic ? mainTopicClass : subTopicClass}`;
+            
+            const checkmark = isCompleted ? '✔' : '';
+            button.innerHTML = `
+                <div class="progress-indicator">
+                    <span class="text-xs font-bold">${checkmark}</span>
+                </div>
+                <span>${title}</span>
+            `;
+            button.onclick = () => handleTopicClick(title);
+            item.appendChild(button);
+            return item;
+        }
+
+        function renderContent(content) {
+             let htmlContent = content
+                .replace(/```(javascript|python|html|css|)\n([\s\S]*?)```/g, (match, lang, code) => {
+                    const escapedCode = code.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    return `<div class="bg-primary rounded-md my-4 overflow-hidden">
+                                <div class="bg-tertiary px-4 py-2 text-xs flex justify-between items-center">
+                                    <span>${lang || 'code'}</span>
+                                    <button class="run-snippet-btn bg-secondary text-accent px-2 py-1 rounded text-xs hover:bg-primary">Run Code</button>
+                                </div>
+                                <pre class="p-4 text-sm"><code class="language-${lang}">${escapedCode}</code></pre>
+                                <div class="snippet-output hidden bg-primary border-t border-themed p-2 text-xs"></div>
+                           </div>`;
+                })
+                .replace(/`([^`]+)`/g, '<code class="bg-tertiary text-accent rounded px-1 py-0.5 text-sm">$1</code>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+
+            modalContent.innerHTML = `<div class="prose prose-invert max-w-none text-primary">${htmlContent}</div>`;
+            
+            document.querySelectorAll('.run-snippet-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const codeBlock = e.target.closest('.bg-primary').querySelector('code');
+                    const outputDiv = e.target.closest('.bg-primary').querySelector('.snippet-output');
+                    runCode(codeBlock.textContent, outputDiv, currentTechnology);
+                });
+            });
+             // Add download buttons
+            const downloadContainer = document.createElement('div');
+            downloadContainer.className = 'mt-8 pt-4 border-t border-themed flex gap-4 justify-end';
+            downloadContainer.innerHTML = `
+                <button id="copy-html-btn" class="bg-secondary hover-bg-tertiary border border-themed text-primary font-bold py-2 px-4 rounded-md transition-colors flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" /><path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" /></svg>
+                    Copy Source Code
+                </button>
+                <button id="download-html-btn" class="bg-secondary hover-bg-tertiary border border-themed text-primary font-bold py-2 px-4 rounded-md transition-colors flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                    Download HTML
+                </button>
+            `;
+            modalContent.appendChild(downloadContainer);
+            document.getElementById('copy-html-btn').addEventListener('click', copyConceptHTML);
+            document.getElementById('download-html-btn').addEventListener('click', generateConceptHTML);
+        }
+        
+        function renderIDE(data) {
+            if (!data || !data.problem) {
+                modalContent.innerHTML = `<p class="text-secondary">Could not generate a practice problem.</p>`;
+                return;
+            }
+            modalContent.innerHTML = `
+                <div class="flex flex-col h-full" style="min-height: 60vh;">
+                    <div class="mb-4">
+                        <h3 class="font-bold text-lg mb-2 text-accent">Coding Problem:</h3>
+                        <p class="text-secondary">${data.problem}</p>
+                    </div>
+                    <div class="flex-grow flex flex-col">
+                        <label for="code-editor-container" class="text-sm font-medium text-secondary mb-2">Your Code:</label>
+                        <div id="code-editor-container" class="w-full h-full min-h-[300px] border border-themed rounded-md"></div>
+                    </div>
+                    <div id="ide-output" class="mt-4 hidden">
+                        <label class="text-sm font-medium text-secondary mb-2">Output:</label>
+                        <pre class="bg-primary text-secondary p-3 rounded-md border border-themed text-sm whitespace-pre-wrap"></pre>
+                    </div>
+                    <div id="hint-box" class="hidden mt-4 p-3 bg-tertiary/50 rounded-lg text-sm text-secondary"></div>
+                    <div class="mt-4 flex gap-4 flex-wrap">
+                        <button id="run-code-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors">Run Code</button>
+                        <button id="hint-btn" class="bg-tertiary hover:bg-cyan-700 text-primary font-bold py-2 px-4 rounded-md transition-colors">Show Hint</button>
+                        <button id="answer-btn" class="bg-accent hover:bg-cyan-500 text-primary font-bold py-2 px-4 rounded-md transition-colors">Reveal Solution</button>
+                        <button id="new-question-btn" class="bg-secondary hover-bg-tertiary border border-themed text-primary font-bold py-2 px-4 rounded-md transition-colors">New Problem</button>
+                    </div>
+                </div>
+            `;
+            
+            initializeIDE(data);
+        }
+
+        function initializeIDE(problemData) {
+            if (monacoEditorInstance) monacoEditorInstance.dispose();
+            require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.41.0/min/vs' }});
+            require(['vs/editor/editor.main'], function () {
+                const editorContainer = document.getElementById('code-editor-container');
+                let lang = currentTechnology.toLowerCase();
+                if (lang === 'dsa' || lang === 'react') lang = 'javascript';
+
+                monacoEditorInstance = monaco.editor.create(editorContainer, {
+                    value: `// Write your ${lang} solution here`,
+                    language: lang,
+                    theme: document.documentElement.classList.contains('dark') ? 'vs-dark' : 'vs',
+                    automaticLayout: true, minimap: { enabled: false }, fontSize: 14, wordWrap: 'on'
+                });
+
+                document.getElementById('hint-btn').addEventListener('click', () => {
+                    document.getElementById('hint-box').textContent = `Hint: ${problemData.hint}`;
+                    document.getElementById('hint-box').classList.remove('hidden');
+                });
+                document.getElementById('answer-btn').addEventListener('click', () => monacoEditorInstance.setValue(problemData.solution));
+                document.getElementById('new-question-btn').addEventListener('click', () => handleTabClick('practice', true));
+                document.getElementById('run-code-btn').addEventListener('click', () => {
+                    const outputEl = document.getElementById('ide-output').querySelector('pre');
+                    runCode(monacoEditorInstance.getValue(), outputEl, currentTechnology);
+                });
+            });
+        }
+
+        function runCode(code, outputEl, technology) {
+            outputEl.parentElement.classList.remove('hidden');
+            let lang = technology.toLowerCase();
+            if (lang === 'dsa' || lang === 'react') lang = 'javascript';
+
+            try {
+                if (lang === 'javascript') {
+                    let capturedLogs = [];
+                    const originalLog = console.log;
+                    console.log = (...args) => {
+                        capturedLogs.push(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '));
+                    };
+                    
+                    new Function(code)();
+                    console.log = originalLog;
+                    outputEl.textContent = capturedLogs.length > 0 ? capturedLogs.join('\n') : 'Code executed without errors and no output to console.';
+                    outputEl.classList.remove('text-red-400');
+                } else if (lang === 'html' || lang === 'css') {
+                    const iframe = document.createElement('iframe');
+                    iframe.style.width = '100%';
+                    iframe.style.height = '150px';
+                    iframe.style.border = 'none';
+                    iframe.className = 'bg-white rounded-md';
+                    const content = lang === 'html' ? code : `<style>${code}</style><body>Check the rendered output above.</body>`;
+                    iframe.srcdoc = content;
+                    outputEl.innerHTML = '';
+                    outputEl.appendChild(iframe);
+                } else {
+                    outputEl.textContent = `Execution for ${technology} is not supported in this browser-based environment.`;
+                }
+            } catch (e) {
+                outputEl.textContent = `Error: ${e.message}`;
+                outputEl.classList.add('text-red-400');
+            }
+        }
+
+        function renderQuizContainer(quizData) {
+            modalContent.innerHTML = `<div id="quiz-panel" class="bg-primary p-4 rounded-lg flex flex-col max-w-2xl mx-auto"></div>`;
+            initializeQuiz(quizData);
+        }
+
+        function initializeQuiz(quizData) {
+            quizState = { questions: quizData, currentQuestionIndex: 0, score: 0, userAnswers: [] };
+            renderQuiz();
+        }
+
+        function renderQuiz() {
+            const quizPanel = document.getElementById('quiz-panel');
+            if (!quizState.questions || !Array.isArray(quizState.questions) || quizState.questions.length === 0) {
+                quizPanel.innerHTML = `<p class="text-secondary">Could not generate a quiz.</p>`;
+                return;
+            }
+
+            if (quizState.currentQuestionIndex >= quizState.questions.length) {
+                renderScoreboard();
+                return;
+            }
+
+            const q = quizState.questions[quizState.currentQuestionIndex];
+            quizPanel.innerHTML = `
+                <div class="flex-grow flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg text-accent">Multiple Choice Quiz</h3>
+                        <p class="text-sm text-secondary">${quizState.currentQuestionIndex + 1} / ${quizState.questions.length}</p>
+                    </div>
+                    <p class="text-secondary mb-4 h-24 overflow-y-auto">${q.question}</p>
+                    <div id="quiz-options" class="space-y-2">
+                        ${q.options.map((opt, i) => `<button data-index="${i}" class="quiz-option w-full text-left p-3 bg-tertiary hover-bg-tertiary rounded-md transition-colors">${opt}</button>`).join('')}
+                    </div>
+                </div>
+                <div id="quiz-feedback" class="mt-4"></div>
+            `;
+
+            const optionButtons = quizPanel.querySelectorAll('.quiz-option');
+            optionButtons.forEach(btn => btn.addEventListener('click', handleOptionSelect));
+        }
+        
+        function handleOptionSelect(e) {
+            const selectedButton = e.target;
+            const selectedIndex = parseInt(selectedButton.dataset.index);
+            const q = quizState.questions[quizState.currentQuestionIndex];
+            const isCorrect = q.options[selectedIndex] === q.answer;
+
+            if (isCorrect) {
+                quizState.score++;
+            }
+
+            const optionButtons = document.querySelectorAll('.quiz-option');
+            optionButtons.forEach(btn => btn.disabled = true);
+
+            const correctIndex = q.options.indexOf(q.answer);
+            optionButtons[correctIndex].classList.add('correct');
+            if (!isCorrect) {
+                selectedButton.classList.add('incorrect');
+            }
+
+            showQuizFeedback(q.explanation);
+        }
+
+        function showQuizFeedback(explanation) {
+            const feedbackPanel = document.getElementById('quiz-feedback');
+            feedbackPanel.innerHTML = `
+                <div class="p-4 bg-tertiary/50 rounded-lg">
+                    <h4 class="font-bold text-accent mb-2">Explanation</h4>
+                    <p class="text-secondary text-sm">${explanation}</p>
+                </div>
+                <button id="next-q-btn" class="mt-4 w-full bg-accent hover:bg-cyan-500 text-primary font-bold py-2 px-4 rounded-md transition-colors">Next</button>
+            `;
+            document.getElementById('next-q-btn').addEventListener('click', () => {
+                quizState.currentQuestionIndex++;
+                renderQuiz();
+            });
+        }
+
+        function renderScoreboard() {
+            const quizPanel = document.getElementById('quiz-panel');
+            const finalScore = Math.round((quizState.score / quizState.questions.length) * 100);
+            quizPanel.innerHTML = `
+                <div class="text-center flex-grow flex flex-col justify-center items-center">
+                    <h3 class="text-2xl font-bold text-accent">Quiz Complete!</h3>
+                    <p class="text-secondary mt-4">Your Score:</p>
+                    <p class="text-6xl font-bold text-primary my-2">${finalScore}<span class="text-3xl text-secondary">/100</span></p>
+                    <div class="flex gap-4 mt-6">
+                        <button id="retake-quiz-btn" class="bg-tertiary hover:bg-cyan-700 text-primary font-bold py-2 px-6 rounded-md transition-colors">Retake Quiz</button>
+                        <button id="new-quiz-btn" class="bg-accent hover:bg-cyan-500 text-primary font-bold py-2 px-6 rounded-md transition-colors">New Quiz</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('retake-quiz-btn').addEventListener('click', () => {
+                initializeQuiz(currentTopicCache.quiz);
+            });
+            document.getElementById('new-quiz-btn').addEventListener('click', () => {
+                handleTabClick('quiz', true);
+            });
+        }
+        
+        function getConceptHTMLSource() {
+            const contentHTML = document.querySelector('#modalContent .prose').innerHTML;
+            const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            return `
+                <!DOCTYPE html>
+                <html lang="en" class="${theme}">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>${currentTopic} - Key Concepts</title>
+                    <script src="https://cdn.tailwindcss.com"><\/script>
+                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+                    <style>
+                        body {
+                            font-family: 'Inter', sans-serif;
+                            background-color: ${theme === 'dark' ? '#111827' : '#f9fafb'};
+                            color: ${theme === 'dark' ? '#f9fafb' : '#111827'};
+                            padding: 1rem;
+                        }
+                        .prose { max-width: 800px; margin: 2rem auto; }
+                        strong { color: ${theme === 'dark' ? '#f9fafb' : '#111827'}; }
+                        code { background-color: ${theme === 'dark' ? '#374151' : '#f3f4f6'}; color: ${theme === 'dark' ? '#22d3ee' : '#0e7490'}; border-radius: 4px; padding: 2px 4px;}
+                    </style>
+                </head>
+                <body>
+                    <div class="prose">
+                        <h1>${currentTopic} - Key Concepts</h1>
+                        ${contentHTML}
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
+        function copyConceptHTML() {
+            const htmlSource = getConceptHTMLSource();
+            const copyButton = document.getElementById('copy-html-btn');
+            const originalText = copyButton.innerHTML;
+
+            const textArea = document.createElement("textarea");
+            textArea.value = htmlSource;
+            textArea.style.position = "fixed";
+            textArea.style.top = 0;
+            textArea.style.left = 0;
+            textArea.style.opacity = 0;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                copyButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                    Copied!
+                `;
+            } catch (err) {
+                showError('Oops, unable to copy');
+            }
+            document.body.removeChild(textArea);
+            
+            setTimeout(() => { copyButton.innerHTML = originalText; }, 2000);
+        }
+
+
+        function generateConceptHTML() {
+            const html = getConceptHTMLSource();
+            const blob = new Blob([html], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `${currentTopic}_Concepts.html`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        // --- Event Handlers & Logic ---
+        async function loadRoadmap(tech) {
+            currentTechnology = tech;
+            techSelection.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+            showLoader(true, `Generating roadmap for ${tech}...`);
+            try {
+                const prompt = technologies[tech];
+                const topics = await fetchWithExponentialBackoff(prompt, true);
+                renderRoadmap(topics);
+                roadmapContainer.classList.remove('hidden');
+            } catch (error) {
+                showError(error.message);
+                showTechSelectionScreen();
+            } finally {
+                showLoader(false);
+            }
+        }
+
+        function handleTopicClick(topic) {
+            currentTopic = topic;
+            currentTopicCache = {};
+            modalTitle.textContent = topic;
+            updateMarkCompleteButton();
+            contentModal.classList.remove('hidden');
+            handleTabClick('concept');
+        }
+
+        async function handleTabClick(tabName, forceRefresh = false) {
+            [conceptTab, practiceTab, quizTab].forEach(tab => {
+                tab.classList.remove('bg-tertiary', 'text-primary');
+                tab.classList.add('text-secondary');
+            });
+            const activeTab = document.getElementById(`${tabName}Tab`);
+            activeTab.classList.add('bg-tertiary', 'text-primary');
+            activeTab.classList.remove('text-secondary');
+
+            if (tabName === 'quiz') {
+                modalContainer.classList.remove('max-w-7xl', 'max-w-5xl');
+                modalContainer.classList.add('max-w-3xl');
+            } else {
+                modalContainer.classList.remove('max-w-3xl');
+                modalContainer.classList.add('max-w-5xl');
+            }
+
+            if (forceRefresh) currentTopicCache[tabName] = null;
+
+            if (currentTopicCache[tabName]) {
+                if(tabName === 'concept') renderContent(currentTopicCache.concept);
+                else if (tabName === 'practice') renderIDE(currentTopicCache.practice);
+                else renderQuizContainer(currentTopicCache.quiz);
+                return;
+            }
+
+            modalContent.innerHTML = `<div class="text-center p-8"><div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-500"></div><p class="mt-2 text-secondary">Generating content...</p></div>`;
+
+            try {
+                let prompt = '';
+                if (tabName === 'concept') {
+                    if (monacoEditorInstance) { monacoEditorInstance.dispose(); monacoEditorInstance = null; }
+                    prompt = `Explain the concept of "${currentTopic}" in ${currentTechnology} for a beginner. Use clear language, provide code examples in markdown format where applicable, and explain what each part of the code does.`;
+                    const concept = await fetchWithExponentialBackoff(prompt);
+                    currentTopicCache.concept = concept;
+                    renderContent(concept);
+                } else if (tabName === 'practice') {
+                    prompt = `Generate a beginner-level coding practice problem for "${currentTopic}" in ${currentTechnology}. The problem should test a core concept. Provide a JSON object with three keys: "problem" (a string describing the task), "hint" (a string with a helpful hint), and "solution" (a string containing the complete code solution).`;
+                    const practiceData = await fetchWithExponentialBackoff(prompt, true);
+                    currentTopicCache.practice = practiceData;
+                    renderIDE(practiceData);
+                } else if (tabName === 'quiz') {
+                    if (monacoEditorInstance) { monacoEditorInstance.dispose(); monacoEditorInstance = null; }
+                    prompt = `Generate a 15-question multiple-choice quiz for "${currentTopic}" in ${currentTechnology}. The questions should test fundamental and important concepts. Provide a JSON array of objects, where each object has "question" (string), "options" (an array of 4 strings), "answer" (a string that matches one of the options), and "explanation" (a detailed string explaining the correct answer).`;
+                    const quizData = await fetchWithExponentialBackoff(prompt, true);
+                    currentTopicCache.quiz = quizData;
+                    renderQuizContainer(quizData);
+                }
+            } catch (error) {
+                modalContent.innerHTML = `<div class="text-red-400">Failed to load content: ${error.message}</div>`;
+            }
+        }
+        
+        function showTechSelectionScreen() {
+            roadmapContainer.classList.add('hidden');
+            techSelection.classList.remove('hidden');
+        }
+
+        function handleCloseModal() {
+            contentModal.classList.add('hidden');
+            if (monacoEditorInstance) {
+                monacoEditorInstance.dispose();
+                monacoEditorInstance = null;
+            }
+        }
+
+        // --- Initial Setup ---
+        function main() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+            renderTechSelection();
+            initializeFirebase();
+        }
+
+        themeToggle.addEventListener('click', handleThemeToggle);
+        backButton.addEventListener('click', showTechSelectionScreen);
+        closeModalButton.addEventListener('click', handleCloseModal);
+        conceptTab.addEventListener('click', () => handleTabClick('concept'));
+        practiceTab.addEventListener('click', () => handleTabClick('practice'));
+        quizTab.addEventListener('click', () => handleTabClick('quiz'));
+        markCompleteBtn.addEventListener('click', handleMarkAsComplete);
+        
+        techSelection.addEventListener('click', (e) => {
+            const button = e.target.closest('button[data-tech]');
+            if (button) loadRoadmap(button.dataset.tech);
+        });
+        
+        window.addEventListener('DOMContentLoaded', main);
+        
+    </script>
+</body>
+</html>
