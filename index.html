@@ -208,6 +208,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                         Back to Topics
                     </button>
+                    <button id="regenerateRoadmapBtn" class="text-secondary hover:text-accent font-medium flex items-center gap-2 transition-colors text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        Regenerate Roadmap
+                    </button>
                 </div>
                 
                 <!-- Progress Bar -->
@@ -330,6 +334,7 @@
         const courseProgress = document.getElementById('courseProgress');
         const progressText = document.getElementById('progressText');
         const progressBar = document.getElementById('progressBar');
+        const regenerateRoadmapBtn = document.getElementById('regenerateRoadmapBtn');
 
         // App State
         let apiKey = ''; 
@@ -375,7 +380,7 @@
         
         // Full prompts
         Object.keys(technologies).forEach(key => {
-             technologies[key] = `Generate a comprehensive ${key} learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics and advanced concepts appropriate for ${key}. CRITICAL: The last item in the array MUST be a main topic titled '🏆 Capstone Projects (AI-Ready)'. Under this topic, list exactly 5 complex, industry-level project ideas as subtopics. These projects should be portfolio-worthy, solve real-world problems, and imply the use of modern tools or AI integration.`;
+             technologies[key] = `Generate an extremely detailed, step-by-step learning roadmap for ${key}. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). The roadmap must cover every single important concept, syntax detail, standard library feature, and best practice. It should be exhaustive. CRITICAL: The last item in the array MUST be a main topic titled '🏆 Capstone Projects (AI-Ready)'. Under this topic, list exactly 5 complex, industry-level project ideas as subtopics. These projects should be portfolio-worthy, solve real-world problems, and imply the use of modern tools or AI integration.`;
         });
 
         // --- Helper Functions ---
@@ -540,6 +545,14 @@
             if (quizTab.classList.contains('text-accent')) activeTab = 'quiz';
             
             handleTabClick(activeTab, true); // Force refresh
+        });
+
+        regenerateRoadmapBtn.addEventListener('click', () => {
+            if (confirm(`Are you sure you want to regenerate the roadmap for ${currentTechnology}? This will replace the current structure (your progress will be preserved where possible).`)) {
+                delete roadmapCache[currentTechnology];
+                saveRoadmapCache();
+                loadRoadmap(currentTechnology);
+            }
         });
 
         // --- Toggle / Check Logic ---
