@@ -3,44 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Learning Roadmap</title>
+    <title>DeeCode - Interactive Learning Roadmap</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Monaco Editor Loader -->
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.41.0/min/vs/loader.js"></script>
     <style>
         :root {
-            --bg-primary: #111827; /* gray-900 */
-            --bg-secondary: #1f2937; /* gray-800 */
-            --bg-tertiary: #374151; /* gray-700 */
-            --text-primary: #f9fafb; /* gray-50 */
-            --text-secondary: #d1d5db; /* gray-300 */
-            --accent-primary: #22d3ee; /* cyan-400 */
-            --accent-secondary: #06b6d4; /* cyan-500 */
-            --border-color: #4b5563; /* gray-600 */
+            /* Light Theme (Slate & Violet) */
+            --bg-primary: #f8fafc; /* slate-50 */
+            --bg-secondary: #ffffff; /* white */
+            --bg-tertiary: #f1f5f9; /* slate-100 */
+            --text-primary: #0f172a; /* slate-900 */
+            --text-secondary: #475569; /* slate-600 */
+            --accent-primary: #8b5cf6; /* violet-500 */
+            --accent-secondary: #7c3aed; /* violet-600 */
+            --accent-hover: #6d28d9; /* violet-700 */
+            --border-color: #e2e8f0; /* slate-200 */
             --correct-color: #10B981; /* green-500 */
             --incorrect-color: #EF4444; /* red-500 */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --radius: 0.75rem;
         }
 
-        html:not(.dark) {
-            --bg-primary: #f9fafb; /* gray-50 */
-            --bg-secondary: #ffffff; /* white */
-            --bg-tertiary: #f3f4f6; /* gray-100 */
-            --text-primary: #111827; /* gray-900 */
-            --text-secondary: #374151; /* gray-700 */
-            --accent-primary: #0e7490; /* cyan-700 */
-            --accent-secondary: #0891b2; /* cyan-600 */
-            --border-color: #e5e7eb; /* gray-200 */
+        html.dark {
+            /* Dark Theme (Deep Slate & Neon Violet) */
+            --bg-primary: #020617; /* slate-950 */
+            --bg-secondary: #0f172a; /* slate-900 */
+            --bg-tertiary: #1e293b; /* slate-800 */
+            --text-primary: #f8fafc; /* slate-50 */
+            --text-secondary: #94a3b8; /* slate-400 */
+            --accent-primary: #a78bfa; /* violet-400 */
+            --accent-secondary: #8b5cf6; /* violet-500 */
+            --accent-hover: #7c3aed; /* violet-600 */
+            --border-color: #334155; /* slate-700 */
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
             background-color: var(--bg-primary);
             color: var(--text-primary);
             transition: background-color 0.3s, color 0.3s;
         }
-        
-        /* Custom styles for dynamic themeing */
+
+        /* Utility classes using variables */
         .bg-primary { background-color: var(--bg-primary); }
         .bg-secondary { background-color: var(--bg-secondary); }
         .bg-tertiary { background-color: var(--bg-tertiary); }
@@ -48,133 +55,228 @@
         .text-secondary { color: var(--text-secondary); }
         .text-accent { color: var(--accent-primary); }
         .border-themed { border-color: var(--border-color); }
-        .hover-bg-tertiary:hover { background-color: var(--bg-tertiary); }
-        .hover-border-accent:hover { border-color: var(--accent-secondary); }
-
-        .roadmap-item:not(:last-child)::after {
-            content: ''; position: absolute; left: 50%; top: 100%;
-            width: 2px; height: 2rem; background-color: var(--border-color);
-            transform: translateX(-50%);
-        }
-        @media (min-width: 768px) {
-            .md-road-branch::before {
-                content: ''; position: absolute; top: 50%; right: 100%;
-                width: 2rem; height: 2px; background-color: var(--border-color);
-            }
-        }
-        .tech-button { transition: all 0.3s ease; }
-        .tech-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(34, 211, 238, 0.1);
-        }
-        .quiz-option.correct { background-color: var(--correct-color) !important; color: white !important; }
-        .quiz-option.incorrect { background-color: var(--incorrect-color) !important; color: white !important; }
-        .quiz-option[disabled] { cursor: not-allowed; }
-
-        /* Animation Styles */
-        .feedback-animation { animation: zoomIn 0.5s ease-out; }
-        .feedback-animation.incorrect-anim { animation: shake 0.5s ease-in-out; }
         
-        @keyframes zoomIn {
-            from { transform: scale(0.5); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        .btn-primary {
+            background-color: var(--accent-secondary);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background-color: var(--bg-secondary);
+            border-color: var(--accent-primary);
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        /* Roadmap Line Styling */
+        .roadmap-container {
+            position: relative;
+        }
+        
+        /* Vertical connecting line */
+        .roadmap-connector {
+            position: absolute;
+            left: 2rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+            z-index: 0;
         }
 
-        /* Progress Indicator Styles */
+        .roadmap-item {
+            position: relative;
+            z-index: 1;
+        }
+
+        .tech-button { 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: var(--radius);
+        }
+        .tech-button:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: var(--accent-primary);
+        }
+
+        .quiz-option.correct { background-color: var(--correct-color) !important; color: white !important; border-color: var(--correct-color); }
+        .quiz-option.incorrect { background-color: var(--incorrect-color) !important; color: white !important; border-color: var(--incorrect-color); }
+        .quiz-option[disabled] { cursor: not-allowed; opacity: 0.8; }
+
+        /* Modern Input Styling */
+        .input-themed {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            width: 100%;
+            padding: 0.75rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input-themed:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+        }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        
         .progress-indicator {
-            width: 20px;
-            height: 20px;
+            width: 24px; height: 24px;
             border: 2px solid var(--border-color);
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
             transition: all 0.3s ease;
+            cursor: pointer;
+            background-color: var(--bg-secondary);
+        }
+        .progress-indicator:hover {
+            border-color: var(--accent-primary);
         }
         .topic-completed .progress-indicator {
             background-color: var(--correct-color);
             border-color: var(--correct-color);
             color: white;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
         }
+        
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: var(--bg-tertiary); border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--text-secondary); border-radius: 4px; opacity: 0.5; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
     </style>
 </head>
 <body>
 
-    <div id="app" class="container mx-auto p-4 md:p-8">
+    <div id="app" class="container mx-auto p-4 md:p-8 min-h-screen flex flex-col">
         <!-- Main Content -->
-        <main id="mainContent">
+        <main id="mainContent" class="flex-grow">
             <!-- Header -->
-            <header class="text-center mb-12 relative">
-                <h1 class="text-4xl md:text-5xl font-bold text-accent">Interactive Learning Roadmap</h1>
-                <p class="text-secondary mt-2">Powered by <span class="font-semibold text-accent">DeeCode</span></p>
-                <div id="userInfo" class="absolute top-0 left-0 text-left text-xs hidden">
-                    <p id="user-greeting" class="text-secondary"></p>
-                    <button id="signOutBtn" class="text-xs text-accent hover:underline">Sign Out</button>
+            <header class="flex flex-col md:flex-row justify-between items-center mb-12 gap-4">
+                <div class="text-center md:text-left">
+                    <h1 class="text-3xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-500 to-fuchsia-500 pb-2">DeeCode</h1>
+                    <p class="text-secondary text-sm md:text-base">Master any technology with AI-guided roadmaps</p>
                 </div>
-                <button id="themeToggle" class="absolute top-0 right-0 p-2 rounded-full hover-bg-tertiary">
-                    <svg id="theme-icon-light" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                    <svg id="theme-icon-dark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-                </button>
+                
+                <div class="flex items-center gap-3">
+                     <button id="settingsBtn" class="p-2 rounded-full hover:bg-white/10 text-secondary hover:text-accent transition-colors" title="Settings">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                    <button id="themeToggle" class="p-2 rounded-full hover:bg-white/10 text-secondary hover:text-accent transition-colors" title="Toggle Theme">
+                        <svg id="theme-icon-light" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                        <svg id="theme-icon-dark" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                    </button>
+                </div>
             </header>
 
             <!-- Technology Selection Screen -->
-            <div id="techSelection" class="max-w-4xl mx-auto">
-                <h2 class="text-2xl font-bold text-center mb-8">Choose Your Learning Path</h2>
+            <div id="techSelection" class="max-w-6xl mx-auto fade-in">
+                <div class="text-center mb-10">
+                    <h2 class="text-2xl font-bold mb-2">Choose Your Path</h2>
+                    <p class="text-secondary">Select a technology to generate a custom learning roadmap</p>
+                </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             </div>
 
             <!-- Roadmap Container -->
-            <div id="roadmapContainer" class="hidden">
-                 <button id="backButton" class="mb-8 bg-tertiary hover:bg-cyan-600 font-bold py-2 px-4 rounded-lg transition-colors">&larr; Back to Topics</button>
-                <div id="roadmapContent"></div>
+            <div id="roadmapContainer" class="hidden max-w-4xl mx-auto fade-in">
+                 <button id="backButton" class="mb-8 btn-secondary font-semibold py-2 px-4 rounded-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                    Back to Topics
+                </button>
+                <div class="roadmap-container pl-4 md:pl-0">
+                    <div class="roadmap-connector hidden md:block"></div>
+                    <div id="roadmapContent"></div>
+                </div>
             </div>
         </main>
         
         <!-- Modals and Overlays -->
-        <div id="loader" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center hidden">
+        <div id="loader" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex justify-center items-center hidden">
              <div class="text-center">
-                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-cyan-500"></div>
-                <p id="loaderText" class="mt-4 text-white">Generating your learning path...</p>
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-violet-500"></div>
+                <p id="loaderText" class="mt-4 text-white font-medium tracking-wide">Crafting your journey...</p>
             </div>
         </div>
-        <div id="errorMessage" class="hidden fixed bottom-5 right-5 max-w-sm bg-red-900/80 border border-red-700 text-red-300 px-4 py-3 rounded-lg z-50"></div>
-        <div id="contentModal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-40 flex justify-center items-center p-4">
-            <div id="modal-container" class="bg-secondary rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col transition-all duration-300">
-                <div class="flex justify-between items-center p-4 border-t border-b border-themed">
-                    <h2 id="modalTitle" class="text-2xl font-bold text-accent"></h2>
-                    <div class="flex items-center gap-4">
-                        <button id="markCompleteBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors text-sm">Mark as Complete</button>
-                        <button id="closeModal" class="text-secondary hover:text-primary text-3xl leading-none">&times;</button>
+        
+        <div id="errorMessage" class="hidden fixed bottom-5 right-5 max-w-sm bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-lg z-50 backdrop-blur-md shadow-lg"></div>
+
+        <!-- Settings Modal -->
+        <div id="settingsModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+            <div class="bg-secondary border border-themed rounded-2xl shadow-2xl w-full max-w-md p-6 transform transition-all scale-100">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-accent">Settings</h2>
+                    <button id="closeSettings" class="text-secondary hover:text-primary transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-secondary mb-1">Gemini API Key</label>
+                        <input type="password" id="apiKeyInput" class="input-themed" placeholder="Enter your API Key here">
+                        <p class="text-xs text-secondary mt-2">
+                            Your key is stored locally in your browser and never sent to our servers. 
+                            <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-accent hover:underline">Get a key here</a>.
+                        </p>
+                    </div>
+                    <div class="pt-4 flex justify-end gap-3">
+                         <button id="clearDataBtn" class="text-xs text-red-400 hover:text-red-500 mr-auto flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            Reset Progress
+                        </button>
+                        <button id="saveSettingsBtn" class="btn-primary py-2 px-6 rounded-lg font-medium shadow-lg shadow-violet-500/20">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Modal -->
+        <div id="contentModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 flex justify-center items-center p-4">
+            <div id="modal-container" class="bg-secondary rounded-2xl border border-themed shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col transition-all duration-300">
+                <div class="flex justify-between items-center p-4 border-b border-themed">
+                    <h2 id="modalTitle" class="text-xl md:text-2xl font-bold text-accent pl-2 truncate pr-4"></h2>
+                    <div class="flex items-center gap-3">
+                        <button id="regenerateBtn" class="text-secondary hover:text-accent p-2 rounded-full hover:bg-tertiary transition-colors" title="Regenerate Content">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </button>
+                        <button id="markCompleteBtn" class="btn-secondary py-1.5 px-4 rounded-lg text-sm font-medium transition-all flex items-center gap-2">
+                            <span>Mark Complete</span>
+                        </button>
+                        <button id="closeModal" class="text-secondary hover:text-primary p-1 rounded-full hover:bg-tertiary transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
                     </div>
                 </div>
                 <div class="flex border-b border-themed">
-                    <button id="conceptTab" class="flex-1 p-3 bg-tertiary text-primary font-semibold">Concept</button>
-                    <button id="practiceTab" class="flex-1 p-3 text-secondary font-semibold">Practice IDE</button>
-                    <button id="quizTab" class="flex-1 p-3 text-secondary font-semibold">Quiz</button>
+                    <button id="conceptTab" class="flex-1 p-3 text-sm font-semibold border-b-2 border-transparent hover:text-accent transition-colors">Concept</button>
+                    <button id="practiceTab" class="flex-1 p-3 text-sm font-semibold border-b-2 border-transparent hover:text-accent transition-colors">Practice IDE</button>
+                    <button id="quizTab" class="flex-1 p-3 text-sm font-semibold border-b-2 border-transparent hover:text-accent transition-colors">Quiz</button>
                 </div>
-                <div id="modalContent" class="p-6 overflow-y-auto flex-grow"></div>
+                <div id="modalContent" class="p-6 overflow-y-auto flex-grow custom-scrollbar"></div>
             </div>
         </div>
     </div>
 
     <script type="module">
-        // Firebase Imports
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signOut, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
         // DOM Elements
         const themeToggle = document.getElementById('themeToggle');
-        const mainContent = document.getElementById('mainContent');
-        const userInfo = document.getElementById('userInfo');
-        const userGreeting = document.getElementById('user-greeting');
-        const signOutBtn = document.getElementById('signOutBtn');
         const techSelection = document.getElementById('techSelection');
         const loader = document.getElementById('loader');
         const loaderText = document.getElementById('loaderText');
@@ -191,148 +293,201 @@
         const quizTab = document.getElementById('quizTab');
         const modalContent = document.getElementById('modalContent');
         const markCompleteBtn = document.getElementById('markCompleteBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettings = document.getElementById('closeSettings');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const clearDataBtn = document.getElementById('clearDataBtn');
+        const regenerateBtn = document.getElementById('regenerateBtn');
 
         // App State
-        let apiKey = 'AIzaSyARgzlaxZw5rOteontqeylbRgca4jOKhFc';
+        let apiKey = ''; 
         let currentTopic = null;
         let currentTechnology = null;
         let monacoEditorInstance = null;
-        let currentTopicCache = {};
+        
+        // Cache structure: contentCache[technology][topic][tabName]
+        let contentCache = {}; 
         let quizState = { questions: [], currentQuestionIndex: 0, score: 0, userAnswers: [] };
         let progress = {};
         let currentRoadmapData = [];
-        let userId = null;
-        let db, auth;
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
         const technologies = {
-            'HTML': "Generate a comprehensive HTML learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Basic Structure, Tags, Forms, and Semantic HTML.",
-            'CSS': "Generate a comprehensive CSS learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Selectors, Box Model, Flexbox, Grid, and Responsive Design.",
-            'JavaScript': "Generate a comprehensive JavaScript learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include at least 5 main topics like 'JavaScript Fundamentals', 'DOM Manipulation', 'Asynchronous JavaScript', etc.",
-            'TypeScript': "Generate a comprehensive TypeScript learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Basic Types, Interfaces, Classes, Generics, and Modules.",
-            'React': "Generate a comprehensive React learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like JSX, Components, State & Props, Hooks, and State Management.",
-            'Redux': "Generate a comprehensive Redux learning roadmap for state management with React. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Core Concepts (Actions, Reducers, Store), React Redux, Async Actions (Thunk/Saga), and Redux Toolkit.",
-            'Node.js': "Generate a comprehensive Node.js learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Node.js Runtime, Modules, File System, HTTP Server, and Event Loop.",
-            'Express.js': "Generate a comprehensive Express.js learning roadmap for building web applications with Node.js. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Routing, Middleware, Request & Response objects, and Template Engines.",
-            'SQL': "Generate a comprehensive SQL learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Basic Queries (SELECT, FROM, WHERE), Joins, Aggregation, Subqueries, and Data Definition Language (DDL).",
-            'MySQL': "Generate a comprehensive MySQL learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Installation, Data Types, CRUD Operations, Indexing, and Stored Procedures.",
-            'MongoDB': "Generate a comprehensive MongoDB learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Documents & Collections, CRUD Operations, Indexing, Aggregation Framework, and Mongoose.",
-            'API': "Generate a comprehensive API design and development roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like REST vs GraphQL, API Design Principles, Authentication, and Documentation.",
-            'System Design': "Generate a comprehensive System Design learning roadmap for software engineering interviews. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Scalability, Caching, Databases, Load Balancing, and Microservices.",
-            'Interview Prep': "Generate a comprehensive technical interview preparation roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Data Structures & Algorithms, Behavioral Questions, System Design, and Company-Specific Research.",
-            'Python': "Generate a comprehensive Python learning roadmap for a beginner. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Basic Syntax, Data Structures, Functions, OOP, and popular libraries.",
-            'DSA': "Generate a comprehensive Data Structures and Algorithms roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics like Arrays, Linked Lists, Stacks, Queues, Trees, Graphs, Sorting, and Searching algorithms.",
-            'AI': "Generate a comprehensive Artificial Intelligence learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Search Algorithms, Knowledge Representation, and AI Ethics.",
-            'ML': "Generate a comprehensive Machine Learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Supervised Learning, Unsupervised Learning, Deep Learning, and Model Evaluation.",
-            'NLP': "Generate a comprehensive Natural Language Processing roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Text Preprocessing, Language Models, and Sentiment Analysis.",
-            'Cloud Computing': "Generate a comprehensive Cloud Computing roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like IaaS, PaaS, SaaS, Virtualization, and major cloud providers (AWS, Azure, GCP).",
-            'DevOps': "Generate a comprehensive DevOps roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like CI/CD, Infrastructure as Code, Containerization (Docker, Kubernetes), and Monitoring.",
-            'Data Science': "Generate a comprehensive Data Science roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Data Wrangling, Exploratory Data Analysis, Machine Learning, and Data Visualization.",
-            'Data Analytics': "Generate a comprehensive Data Analytics roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Data Collection, SQL, Statistical Analysis, and BI Tools (Tableau, Power BI).",
-            'Cybersecurity': "Generate a comprehensive Cybersecurity roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Network Security, Cryptography, Web Security, and Incident Response.",
-            'Ethical Hacking': "Generate a comprehensive Ethical Hacking roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Reconnaissance, Scanning, Gaining Access, and Maintaining Access.",
-            'AI & Automation': "Generate a comprehensive AI & Automation roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include topics like Robotic Process Automation (RPA), AI-powered workflows, and intelligent automation tools."
+            'HTML': "Generate a comprehensive HTML learning roadmap...",
+            'CSS': "Generate a comprehensive CSS learning roadmap...",
+            'JavaScript': "Generate a comprehensive JavaScript learning roadmap...",
+            'TypeScript': "Generate a comprehensive TypeScript learning roadmap...",
+            'React': "Generate a comprehensive React learning roadmap...",
+            'Redux': "Generate a comprehensive Redux learning roadmap...",
+            'Node.js': "Generate a comprehensive Node.js learning roadmap...",
+            'Express.js': "Generate a comprehensive Express.js learning roadmap...",
+            'SQL': "Generate a comprehensive SQL learning roadmap...",
+            'MySQL': "Generate a comprehensive MySQL learning roadmap...",
+            'MongoDB': "Generate a comprehensive MongoDB learning roadmap...",
+            'API': "Generate a comprehensive API design and development roadmap...",
+            'System Design': "Generate a comprehensive System Design learning roadmap...",
+            'Interview Prep': "Generate a comprehensive technical interview preparation roadmap...",
+            'Python': "Generate a comprehensive Python learning roadmap...",
+            'DSA': "Generate a comprehensive Data Structures and Algorithms roadmap...",
+            'AI': "Generate a comprehensive Artificial Intelligence learning roadmap...",
+            'ML': "Generate a comprehensive Machine Learning roadmap...",
+            'NLP': "Generate a comprehensive Natural Language Processing roadmap...",
+            'Cloud Computing': "Generate a comprehensive Cloud Computing roadmap...",
+            'DevOps': "Generate a comprehensive DevOps roadmap...",
+            'Data Science': "Generate a comprehensive Data Science learning roadmap...",
+            'Cybersecurity': "Generate a comprehensive Cybersecurity roadmap...",
+            'Ethical Hacking': "Generate a comprehensive Ethical Hacking roadmap...",
         };
-
-        // --- Firebase Setup ---
-        function initializeFirebase() {
-            try {
-                if (typeof __firebase_config === 'undefined' || !__firebase_config) {
-                    throw new Error("Firebase config not provided.");
-                }
-                const firebaseConfig = JSON.parse(__firebase_config);
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                handleAuthentication();
-            } catch (e) {
-                console.error("Firebase initialization error:", e);
-                showError("Could not connect to the cloud. Progress will not be saved.");
-                mainContent.classList.remove('hidden');
-            }
-        }
-
-        // --- Authentication ---
-        async function handleAuthentication() {
-            onAuthStateChanged(auth, async (user) => {
-                if (user) {
-                    await startApp(user);
-                } else {
-                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        try {
-                            await signInWithCustomToken(auth, __initial_auth_token);
-                        } catch (error) {
-                            console.error("Custom token sign-in failed, falling back to anonymous:", error);
-                            await signInAnonymously(auth);
-                        }
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                }
-            });
-        }
-
-        async function startApp(user) {
-            userId = user.uid;
-            userGreeting.textContent = user.isAnonymous ? `Welcome, Guest!` : `Welcome, ${user.displayName || 'User'}!`;
-            userInfo.classList.remove('hidden');
-            await loadProgress(userId);
-            mainContent.classList.remove('hidden');
-        }
-
-        signOutBtn.addEventListener('click', () => {
-            signOut(auth).then(() => {
-                window.location.reload();
-            });
+        
+        // Full prompts
+        Object.keys(technologies).forEach(key => {
+             technologies[key] = `Generate a comprehensive ${key} learning roadmap. Provide a JSON array where each object has a 'title' (string for the main topic) and 'subtopics' (an array of strings). Include key topics and advanced concepts appropriate for ${key}.`;
         });
 
-        // --- Progress Management ---
-        async function loadProgress(uid) {
-            const docRef = doc(db, "artifacts", appId, "users", uid, "progress", "data");
+        // --- Helper Functions ---
+        function showTechSelectionScreen() {
+            roadmapContainer.classList.add('hidden');
+            techSelection.classList.remove('hidden');
+        }
+
+        function showLoader(show, text = 'Processing...') { 
+            loaderText.textContent = text;
+            loader.classList.toggle('hidden', !show);
+        }
+        
+        function showError(message) { 
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            setTimeout(() => errorMessage.classList.add('hidden'), 5000);
+        }
+
+        function renderTechSelection() {
+            const container = techSelection.querySelector('.grid');
+            container.innerHTML = Object.keys(technologies).map(tech => `
+                <button data-tech="${tech}" class="tech-button bg-secondary border border-themed p-6 flex flex-col items-center justify-center gap-4 group">
+                    <div class="w-16 h-16 rounded-full bg-tertiary flex items-center justify-center group-hover:bg-accent-primary/10 transition-colors">
+                        <span class="text-2xl font-bold text-secondary group-hover:text-accent">${tech.substring(0,2)}</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-primary group-hover:text-accent transition-colors">${tech}</h3>
+                </button>
+            `).join('');
+        }
+
+        // --- Persistence (Progress & Content) ---
+        function loadSettings() {
+            apiKey = localStorage.getItem('devpath_api_key') || '';
+            const savedProgress = localStorage.getItem('devpath_progress');
+            progress = savedProgress ? JSON.parse(savedProgress) : {};
+            
+            // Load Content Cache
+            const savedCache = localStorage.getItem('devpath_content_cache');
+            if (savedCache) {
+                try {
+                    contentCache = JSON.parse(savedCache);
+                } catch(e) {
+                    console.error("Cache parse error", e);
+                    contentCache = {};
+                }
+            }
+        }
+
+        function saveLocalProgress() {
+            localStorage.setItem('devpath_progress', JSON.stringify(progress));
+        }
+        
+        function saveContentCache() {
             try {
-                const docSnap = await getDoc(docRef);
-                progress = docSnap.exists() ? docSnap.data() : {};
+                localStorage.setItem('devpath_content_cache', JSON.stringify(contentCache));
             } catch (e) {
-                console.error("Error loading progress:", e);
+                console.warn("Storage quota exceeded. Could not save content cache.", e);
+                // Optionally maintain in-memory only if quota exceeded
+            }
+        }
+
+        function saveSettings() {
+            const key = apiKeyInput.value.trim();
+            if (key) {
+                localStorage.setItem('devpath_api_key', key);
+                apiKey = key;
+                settingsModal.classList.add('hidden');
+                if (currentTechnology && roadmapContent.innerHTML === '') {
+                     loadRoadmap(currentTechnology);
+                }
+            } else {
+                showError("Please enter a valid API Key");
+            }
+        }
+
+        function clearAllData() {
+            if(confirm("Are you sure you want to reset all your progress and cached content? This cannot be undone.")) {
                 progress = {};
+                contentCache = {};
+                saveLocalProgress();
+                saveContentCache();
+                renderRoadmap(currentRoadmapData);
+                alert("All data reset.");
             }
         }
 
-        async function saveProgress() {
-            if (!userId || !db) return;
-            const docRef = doc(db, "artifacts", appId, "users", userId, "progress", "data");
-            try {
-                await setDoc(docRef, progress);
-            } catch (e) {
-                console.error("Error saving progress:", e);
-                showError("Could not save progress to the cloud.");
-            }
-        }
+        // --- Event Listeners ---
+        settingsBtn.addEventListener('click', () => {
+            apiKeyInput.value = apiKey;
+            settingsModal.classList.remove('hidden');
+        });
 
+        closeSettings.addEventListener('click', () => {
+            settingsModal.classList.add('hidden');
+        });
+        
+        saveSettingsBtn.addEventListener('click', saveSettings);
+        clearDataBtn.addEventListener('click', clearAllData);
+        
+        regenerateBtn.addEventListener('click', () => {
+            // Determine active tab
+            let activeTab = 'concept';
+            if (practiceTab.classList.contains('text-accent')) activeTab = 'practice';
+            if (quizTab.classList.contains('text-accent')) activeTab = 'quiz';
+            
+            handleTabClick(activeTab, true); // Force refresh
+        });
+
+        // --- Toggle / Check Logic ---
         const handleMarkAsComplete = () => {
             if (!progress[currentTechnology]) {
                 progress[currentTechnology] = [];
             }
-            if (!progress[currentTechnology].includes(currentTopic)) {
+            
+            const index = progress[currentTechnology].indexOf(currentTopic);
+            
+            if (index === -1) {
+                // Not completed, so mark complete
                 progress[currentTechnology].push(currentTopic);
-                saveProgress();
-                updateMarkCompleteButton();
-                renderRoadmap(currentRoadmapData);
+            } else {
+                // Completed, so unmark (toggle off)
+                progress[currentTechnology].splice(index, 1);
             }
+            
+            saveLocalProgress();
+            updateMarkCompleteButton();
+            renderRoadmap(currentRoadmapData);
         };
 
         const updateMarkCompleteButton = () => {
             const isCompleted = progress[currentTechnology]?.includes(currentTopic);
+            
+            // Remove all existing classes to reset state
+            markCompleteBtn.classList.remove('bg-green-500/20', 'text-green-500', 'border-green-500/50', 'btn-secondary', 'text-secondary');
+            
             if (isCompleted) {
-                markCompleteBtn.textContent = 'Completed ✔';
-                markCompleteBtn.disabled = true;
-                markCompleteBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-                markCompleteBtn.classList.add('bg-gray-500', 'cursor-not-allowed');
+                markCompleteBtn.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <span>Completed</span>
+                `;
+                markCompleteBtn.classList.add('bg-green-500/20', 'text-green-500', 'border-green-500/50');
             } else {
-                markCompleteBtn.textContent = 'Mark as Complete';
-                markCompleteBtn.disabled = false;
-                markCompleteBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-                markCompleteBtn.classList.remove('bg-gray-500', 'cursor-not-allowed');
+                markCompleteBtn.innerHTML = `<span>Mark as Complete</span>`;
+                markCompleteBtn.classList.add('btn-secondary');
             }
         };
         
@@ -355,7 +510,12 @@
 
         // --- API Communication ---
         async function fetchWithExponentialBackoff(prompt, isJson = false) {
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            if (!apiKey) {
+                settingsModal.classList.remove('hidden');
+                throw new Error("Please enter your Gemini API Key in Settings.");
+            }
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
             const payload = { contents: [{ parts: [{ text: prompt }] }], generationConfig: {} };
             if (isJson) payload.generationConfig.responseMimeType = "application/json";
 
@@ -365,41 +525,32 @@
                     const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                     if (!response.ok) {
                         const errorBody = await response.json();
-                        throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorBody.error?.message || 'Unknown error'}`);
+                        throw new Error(`API Error: ${response.status} - ${errorBody.error?.message || 'Check your API Key'}`);
                     }
                     const result = await response.json();
                     if (result.candidates && result.candidates[0].content.parts.length > 0) {
                         let content = result.candidates[0].content.parts[0].text;
                         if (isJson) {
-                             // Robust JSON parsing
                             const jsonStartIndex = content.indexOf('[');
-                            const jsonEndIndex = content.lastIndexOf(']');
                             const jsonStartIndexObj = content.indexOf('{');
-                            const jsonEndIndexObj = content.lastIndexOf('}');
-                            let start = -1, end = -1;
-                            if (jsonStartIndex !== -1 && jsonEndIndex !== -1) {
-                                start = jsonStartIndex;
-                                end = jsonEndIndex + 1;
-                            } else if (jsonStartIndexObj !== -1 && jsonEndIndexObj !== -1) {
-                                start = jsonStartIndexObj;
-                                end = jsonEndIndexObj + 1;
-                            }
+                            let start = -1;
+                            if (jsonStartIndex !== -1 && (jsonStartIndexObj === -1 || jsonStartIndex < jsonStartIndexObj)) start = jsonStartIndex;
+                            else start = jsonStartIndexObj;
+
                             if (start !== -1) {
-                                const jsonString = content.substring(start, end);
+                                content = content.replace(/```json/g, '').replace(/```/g, '').trim();
                                 try {
-                                    return JSON.parse(jsonString);
+                                    return JSON.parse(content);
                                 } catch (e) {
-                                    console.error("Failed to parse extracted JSON:", jsonString, e);
-                                    throw new Error("API returned invalid JSON content.");
+                                     const end = content.lastIndexOf(start === jsonStartIndex ? ']' : '}') + 1;
+                                     return JSON.parse(content.substring(start, end));
                                 }
                             }
-                            throw new Error("No valid JSON array or object found in API response.");
+                            throw new Error("No valid JSON found.");
                         }
                         return content;
-                    } else {
-                        if (result.promptFeedback && result.promptFeedback.blockReason) throw new Error(`API call blocked: ${result.promptFeedback.blockReason}`);
-                        throw new Error("No content received from API.");
-                    }
+                    } 
+                    throw new Error("No content received.");
                 } catch (error) {
                     console.error(`Attempt failed: ${error.message}`);
                     retries--;
@@ -410,53 +561,30 @@
             }
         }
 
-        // --- UI Rendering & Notifications ---
-        function showLoader(show, text = 'Generating content...') { 
-            loaderText.textContent = text;
-            loader.classList.toggle('hidden', !show);
-        }
-        function showError(message) { 
-            errorMessage.textContent = `Error: ${message}`;
-            errorMessage.classList.remove('hidden');
-            setTimeout(() => errorMessage.classList.add('hidden'), 5000);
-        }
-        
-        function renderTechSelection() {
-            const container = techSelection.querySelector('.grid');
-            container.innerHTML = Object.keys(technologies).map(tech => `
-                <button data-tech="${tech}" class="tech-button bg-secondary border border-themed rounded-lg p-6 text-center hover-bg-tertiary hover-border-accent">
-                    <h3 class="text-xl font-bold text-accent">${tech}</h3>
-                </button>
-            `).join('');
-        }
-        
+        // --- UI Rendering ---
         function renderRoadmap(topics) {
             currentRoadmapData = topics;
             roadmapContent.innerHTML = '';
             if (!topics || !Array.isArray(topics) || topics.length === 0) {
-                roadmapContent.innerHTML = `<p class="text-secondary text-center">Could not generate a valid roadmap. Please try again.</p>`;
+                roadmapContent.innerHTML = `<p class="text-secondary text-center">Could not generate a valid roadmap. Please check your API key and try again.</p>`;
                 return;
             }
             const mainPath = document.createElement('div');
-            mainPath.className = 'relative flex flex-col items-center';
+            mainPath.className = 'relative flex flex-col items-center w-full max-w-2xl mx-auto';
             const completedForLang = progress[currentTechnology] || [];
 
-            topics.forEach(topic => {
+            topics.forEach((topic, index) => {
                 if (topic && topic.title) {
                     const isCompleted = completedForLang.includes(topic.title);
-                    const item = createRoadmapItem(topic.title, true, isCompleted);
+                    const item = createRoadmapItem(topic.title, true, isCompleted, index);
                     mainPath.appendChild(item);
 
-                    if (topic.subtopics && Array.isArray(topic.subtopics) && topic.subtopics.length > 0) {
+                    if (topic.subtopics && Array.isArray(topic.subtopics)) {
                         const subtopicContainer = document.createElement('div');
-                        subtopicContainer.className = 'relative md:pl-8 lg:pl-16 mt-4 w-full flex flex-col md:items-start';
-                        
+                        subtopicContainer.className = 'relative pl-8 md:pl-12 mt-4 w-full flex flex-col items-start gap-4 mb-8 border-l-2 border-dashed border-slate-700/30 dark:border-slate-500/30 ml-8';
                         topic.subtopics.forEach(subtopic => {
-                            if (subtopic) {
-                                const isSubCompleted = completedForLang.includes(subtopic);
-                                const subItem = createRoadmapItem(subtopic, false, isSubCompleted);
-                                subtopicContainer.appendChild(subItem);
-                            }
+                            const isSubCompleted = completedForLang.includes(subtopic);
+                            subtopicContainer.appendChild(createRoadmapItem(subtopic, false, isSubCompleted));
                         });
                         mainPath.appendChild(subtopicContainer);
                     }
@@ -465,101 +593,110 @@
             roadmapContent.appendChild(mainPath);
         }
 
-        function createRoadmapItem(title, isMainTopic, isCompleted) {
+        function createRoadmapItem(title, isMainTopic, isCompleted, index = 0) {
             const item = document.createElement('div');
-            item.className = `roadmap-item relative my-4 ${isCompleted ? 'topic-completed' : ''}`;
+            item.className = `roadmap-item w-full relative ${isCompleted ? 'topic-completed' : ''} ${isMainTopic ? 'mt-4' : ''}`;
             
             const button = document.createElement('button');
-            const buttonBaseClass = 'flex items-center gap-3 text-left transition-all duration-300 transform hover:scale-105';
-            const mainTopicClass = 'bg-tertiary text-accent border-2 border-accent font-bold py-3 px-6 rounded-lg shadow-lg hover:bg-accent hover:text-primary';
-            const subTopicClass = 'md-road-branch bg-secondary text-secondary border border-themed py-2 px-4 rounded-md hover-bg-tertiary hover-border-accent';
-            button.className = `${buttonBaseClass} ${isMainTopic ? mainTopicClass : subTopicClass}`;
+            const baseClass = 'flex items-center gap-4 text-left transition-all duration-300 w-full group ';
+            // Style Differentiation
+            const mainClass = 'bg-secondary border border-themed p-4 rounded-xl shadow-sm hover:shadow-md hover:border-accent hover:translate-x-1 relative z-10';
+            const subClass = 'bg-tertiary/40 border border-transparent p-3 rounded-lg hover:bg-secondary hover:border-accent/50 text-sm';
             
-            const checkmark = isCompleted ? '✔' : '';
-            button.innerHTML = `
-                <div class="progress-indicator">
-                    <span class="text-xs font-bold">${checkmark}</span>
+            button.className = `${baseClass} ${isMainTopic ? mainClass : subClass}`;
+            
+            const checkmark = isCompleted ? '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>' : '';
+            
+            // Add click listener specifically for the indicator to toggle without opening modal
+            const indicatorHtml = `
+                <div class="progress-indicator flex-shrink-0 group-hover:border-accent transition-colors" onclick="event.stopPropagation(); window.toggleTopic('${title.replace(/'/g, "\\'")}')">
+                    ${checkmark}
                 </div>
-                <span>${title}</span>
             `;
-            button.onclick = () => handleTopicClick(title);
+            
+            button.innerHTML = `
+                ${indicatorHtml}
+                <div class="flex-grow">
+                     <span class="${isMainTopic ? 'font-bold text-lg' : 'font-medium'} group-hover:text-primary transition-colors">${title}</span>
+                     ${isMainTopic && isCompleted ? '<span class="text-xs text-green-500 block font-mono mt-1">Completed</span>' : ''}
+                </div>
+                <div class="opacity-0 group-hover:opacity-100 transition-opacity text-accent">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </div>
+            `;
+            button.onclick = (e) => {
+                // Only open modal if we didn't click the indicator
+                if(!e.target.closest('.progress-indicator')) {
+                    handleTopicClick(title);
+                }
+            };
             item.appendChild(button);
             return item;
         }
 
+        // Exposed globally for the inline onclick handler
+        window.toggleTopic = (topic) => {
+            currentTopic = topic; // Set current topic specifically for the toggle logic
+            handleMarkAsComplete();
+        };
+
         function renderContent(content) {
              let htmlContent = content
-                .replace(/```(javascript|python|html|css|)\n([\s\S]*?)```/g, (match, lang, code) => {
+                .replace(/```(javascript|python|html|css|typescript|sql|bash|)\n([\s\S]*?)```/g, (match, lang, code) => {
                     const escapedCode = code.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                    return `<div class="bg-primary rounded-md my-4 overflow-hidden">
-                                <div class="bg-tertiary px-4 py-2 text-xs flex justify-between items-center">
-                                    <span>${lang || 'code'}</span>
-                                    <button class="run-snippet-btn bg-secondary text-accent px-2 py-1 rounded text-xs hover:bg-primary">Run Code</button>
+                    return `<div class="bg-primary border border-themed rounded-lg my-6 overflow-hidden shadow-sm">
+                                <div class="bg-tertiary px-4 py-2 text-xs font-mono text-secondary flex justify-between items-center border-b border-themed">
+                                    <span class="uppercase">${lang || 'code'}</span>
+                                    <button class="run-snippet-btn text-accent hover:text-white hover:bg-accent-primary px-3 py-1 rounded transition-colors">Run Code</button>
                                 </div>
-                                <pre class="p-4 text-sm"><code class="language-${lang}">${escapedCode}</code></pre>
-                                <div class="snippet-output hidden bg-primary border-t border-themed p-2 text-xs"></div>
+                                <pre class="p-4 text-sm overflow-x-auto custom-scrollbar"><code class="language-${lang}">${escapedCode}</code></pre>
+                                <div class="snippet-output hidden bg-secondary border-t border-themed p-4 text-sm font-mono text-secondary"></div>
                            </div>`;
                 })
-                .replace(/`([^`]+)`/g, '<code class="bg-tertiary text-accent rounded px-1 py-0.5 text-sm">$1</code>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/`([^`]+)`/g, '<code class="bg-tertiary text-accent font-mono text-sm px-1.5 py-0.5 rounded border border-themed">$1</code>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-bold">$1</strong>')
+                .replace(/### (.*?)\n/g, '<h3 class="text-xl font-bold text-accent mt-6 mb-3">$1</h3>')
+                .replace(/## (.*?)\n/g, '<h2 class="text-2xl font-bold text-primary mt-8 mb-4 border-b border-themed pb-2">$1</h2>')
+                .replace(/- (.*?)\n/g, '<li class="ml-4 list-disc marker:text-accent mb-1 text-secondary">$1</li>')
                 .replace(/\n/g, '<br>');
 
-            modalContent.innerHTML = `<div class="prose prose-invert max-w-none text-primary">${htmlContent}</div>`;
+            modalContent.innerHTML = `<div class="prose max-w-none text-secondary leading-relaxed">${htmlContent}</div>`;
             
             document.querySelectorAll('.run-snippet-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const codeBlock = e.target.closest('.bg-primary').querySelector('code');
-                    const outputDiv = e.target.closest('.bg-primary').querySelector('.snippet-output');
-                    runCode(codeBlock.textContent, outputDiv, currentTechnology);
+                    const container = e.target.closest('.bg-primary');
+                    const code = container.querySelector('code').textContent;
+                    const output = container.querySelector('.snippet-output');
+                    runCode(code, output, currentTechnology);
                 });
             });
-             // Add download buttons
-            const downloadContainer = document.createElement('div');
-            downloadContainer.className = 'mt-8 pt-4 border-t border-themed flex gap-4 justify-end';
-            downloadContainer.innerHTML = `
-                <button id="copy-html-btn" class="bg-secondary hover-bg-tertiary border border-themed text-primary font-bold py-2 px-4 rounded-md transition-colors flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" /><path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" /></svg>
-                    Copy Source Code
-                </button>
-                <button id="download-html-btn" class="bg-secondary hover-bg-tertiary border border-themed text-primary font-bold py-2 px-4 rounded-md transition-colors flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
-                    Download HTML
-                </button>
-            `;
-            modalContent.appendChild(downloadContainer);
-            document.getElementById('copy-html-btn').addEventListener('click', copyConceptHTML);
-            document.getElementById('download-html-btn').addEventListener('click', generateConceptHTML);
         }
         
+        // --- IDE & Coding Logic ---
         function renderIDE(data) {
             if (!data || !data.problem) {
-                modalContent.innerHTML = `<p class="text-secondary">Could not generate a practice problem.</p>`;
+                modalContent.innerHTML = `<p class="text-secondary p-4">Could not load problem.</p>`;
                 return;
             }
             modalContent.innerHTML = `
-                <div class="flex flex-col h-full" style="min-height: 60vh;">
-                    <div class="mb-4">
-                        <h3 class="font-bold text-lg mb-2 text-accent">Coding Problem:</h3>
-                        <p class="text-secondary">${data.problem}</p>
+                <div class="flex flex-col h-full gap-4" style="min-height: 65vh;">
+                    <div class="bg-tertiary/50 p-4 rounded-xl border border-themed">
+                        <h3 class="font-bold text-lg mb-2 text-accent">Challenge</h3>
+                        <p class="text-secondary leading-relaxed">${data.problem}</p>
                     </div>
-                    <div class="flex-grow flex flex-col">
-                        <label for="code-editor-container" class="text-sm font-medium text-secondary mb-2">Your Code:</label>
-                        <div id="code-editor-container" class="w-full h-full min-h-[300px] border border-themed rounded-md"></div>
+                    <div class="flex-grow flex flex-col relative">
+                        <div id="code-editor-container" class="absolute inset-0 border border-themed rounded-xl overflow-hidden shadow-sm"></div>
                     </div>
-                    <div id="ide-output" class="mt-4 hidden">
-                        <label class="text-sm font-medium text-secondary mb-2">Output:</label>
-                        <pre class="bg-primary text-secondary p-3 rounded-md border border-themed text-sm whitespace-pre-wrap"></pre>
-                    </div>
-                    <div id="hint-box" class="hidden mt-4 p-3 bg-tertiary/50 rounded-lg text-sm text-secondary"></div>
-                    <div class="mt-4 flex gap-4 flex-wrap">
-                        <button id="run-code-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors">Run Code</button>
-                        <button id="hint-btn" class="bg-tertiary hover:bg-cyan-700 text-primary font-bold py-2 px-4 rounded-md transition-colors">Show Hint</button>
-                        <button id="answer-btn" class="bg-accent hover:bg-cyan-500 text-primary font-bold py-2 px-4 rounded-md transition-colors">Reveal Solution</button>
-                        <button id="new-question-btn" class="bg-secondary hover-bg-tertiary border border-themed text-primary font-bold py-2 px-4 rounded-md transition-colors">New Problem</button>
+                    <div id="ide-output" class="hidden bg-primary p-4 rounded-xl border border-themed font-mono text-sm text-secondary"></div>
+                    <div id="hint-box" class="hidden p-4 bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 rounded-xl text-sm"></div>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <button id="run-code-btn" class="btn-primary py-2.5 rounded-lg font-semibold">Run Code</button>
+                        <button id="hint-btn" class="btn-secondary py-2.5 rounded-lg font-medium">Hint</button>
+                        <button id="answer-btn" class="btn-secondary py-2.5 rounded-lg font-medium">Solution</button>
+                        <button id="new-question-btn" class="bg-tertiary hover:bg-secondary border border-themed text-secondary py-2.5 rounded-lg font-medium transition-colors">Next Problem</button>
                     </div>
                 </div>
             `;
-            
             initializeIDE(data);
         }
 
@@ -568,79 +705,97 @@
             require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.41.0/min/vs' }});
             require(['vs/editor/editor.main'], function () {
                 const editorContainer = document.getElementById('code-editor-container');
+                if (!editorContainer) return;
+
                 let lang = currentTechnology.toLowerCase();
-                if (lang === 'dsa' || lang === 'react') lang = 'javascript';
+                if (['react','dsa','node.js','express.js'].some(x => lang.includes(x))) lang = 'javascript';
+                if (lang === 'python') lang = 'python';
 
                 monacoEditorInstance = monaco.editor.create(editorContainer, {
-                    value: `// Write your ${lang} solution here`,
+                    value: `// Write your ${lang} solution here...\n\n`,
                     language: lang,
                     theme: document.documentElement.classList.contains('dark') ? 'vs-dark' : 'vs',
-                    automaticLayout: true, minimap: { enabled: false }, fontSize: 14, wordWrap: 'on'
+                    automaticLayout: true,
+                    minimap: { enabled: false },
+                    fontSize: 14,
+                    padding: { top: 16 },
+                    scrollBeyondLastLine: false,
+                    fontFamily: "'Fira Code', monospace"
                 });
 
                 document.getElementById('hint-btn').addEventListener('click', () => {
-                    document.getElementById('hint-box').textContent = `Hint: ${problemData.hint}`;
-                    document.getElementById('hint-box').classList.remove('hidden');
+                    const box = document.getElementById('hint-box');
+                    box.textContent = `💡 Hint: ${problemData.hint}`;
+                    box.classList.remove('hidden');
                 });
                 document.getElementById('answer-btn').addEventListener('click', () => monacoEditorInstance.setValue(problemData.solution));
                 document.getElementById('new-question-btn').addEventListener('click', () => handleTabClick('practice', true));
                 document.getElementById('run-code-btn').addEventListener('click', () => {
-                    const outputEl = document.getElementById('ide-output').querySelector('pre');
+                    const outputEl = document.getElementById('ide-output');
                     runCode(monacoEditorInstance.getValue(), outputEl, currentTechnology);
                 });
             });
         }
 
         function runCode(code, outputEl, technology) {
-            outputEl.parentElement.classList.remove('hidden');
+            outputEl.classList.remove('hidden');
             let lang = technology.toLowerCase();
-            if (lang === 'dsa' || lang === 'react') lang = 'javascript';
+            
+            outputEl.innerHTML = '<span class="animate-pulse">Running...</span>';
 
-            try {
-                if (lang === 'javascript') {
-                    let capturedLogs = [];
-                    const originalLog = console.log;
-                    console.log = (...args) => {
-                        capturedLogs.push(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(' '));
-                    };
-                    
-                    new Function(code)();
-                    console.log = originalLog;
-                    outputEl.textContent = capturedLogs.length > 0 ? capturedLogs.join('\n') : 'Code executed without errors and no output to console.';
-                    outputEl.classList.remove('text-red-400');
-                } else if (lang === 'html' || lang === 'css') {
-                    const iframe = document.createElement('iframe');
-                    iframe.style.width = '100%';
-                    iframe.style.height = '150px';
-                    iframe.style.border = 'none';
-                    iframe.className = 'bg-white rounded-md';
-                    const content = lang === 'html' ? code : `<style>${code}</style><body>Check the rendered output above.</body>`;
-                    iframe.srcdoc = content;
-                    outputEl.innerHTML = '';
-                    outputEl.appendChild(iframe);
-                } else {
-                    outputEl.textContent = `Execution for ${technology} is not supported in this browser-based environment.`;
+            setTimeout(() => {
+                try {
+                    if (lang.includes('html') || lang.includes('css')) {
+                        const iframe = document.createElement('iframe');
+                        iframe.style.width = '100%';
+                        iframe.style.height = '150px';
+                        iframe.style.border = 'none';
+                        iframe.className = 'bg-white rounded';
+                        const content = lang.includes('html') ? code : `<style>${code}</style><body><div class="box">Preview Box</div></body>`;
+                        outputEl.innerHTML = '';
+                        outputEl.appendChild(iframe);
+                        iframe.contentWindow.document.open();
+                        iframe.contentWindow.document.write(content);
+                        iframe.contentWindow.document.close();
+                    } else if (lang.includes('javascript') || lang.includes('dsa') || lang.includes('node') || lang.includes('react')) {
+                        let logs = [];
+                        const originalLog = console.log;
+                        console.log = (...args) => logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : a).join(' '));
+                        
+                        try {
+                            new Function(code)();
+                        } catch(e) {
+                            console.log(`Error: ${e.message}`);
+                        }
+                        
+                        console.log = originalLog;
+                        outputEl.textContent = logs.length ? logs.join('\n') : "Code executed. (No output captured)";
+                        outputEl.classList.toggle('text-red-500', logs.some(l => l.includes('Error')));
+                    } else {
+                        outputEl.textContent = "Client-side execution not supported for this language. Code looks good though!";
+                    }
+                } catch (e) {
+                    outputEl.textContent = `Execution Error: ${e.message}`;
+                    outputEl.classList.add('text-red-500');
                 }
-            } catch (e) {
-                outputEl.textContent = `Error: ${e.message}`;
-                outputEl.classList.add('text-red-400');
-            }
+            }, 300);
         }
 
+        // --- Quiz Logic ---
         function renderQuizContainer(quizData) {
-            modalContent.innerHTML = `<div id="quiz-panel" class="bg-primary p-4 rounded-lg flex flex-col max-w-2xl mx-auto"></div>`;
+            modalContent.innerHTML = `<div id="quiz-panel" class="max-w-2xl mx-auto flex flex-col h-full justify-center"></div>`;
             initializeQuiz(quizData);
         }
 
         function initializeQuiz(quizData) {
-            quizState = { questions: quizData, currentQuestionIndex: 0, score: 0, userAnswers: [] };
+            quizState = { questions: quizData, currentQuestionIndex: 0, score: 0 };
             renderQuiz();
         }
 
         function renderQuiz() {
             const quizPanel = document.getElementById('quiz-panel');
-            if (!quizState.questions || !Array.isArray(quizState.questions) || quizState.questions.length === 0) {
-                quizPanel.innerHTML = `<p class="text-secondary">Could not generate a quiz.</p>`;
+            if (!quizState.questions || !quizState.questions.length) {
+                quizPanel.innerHTML = `<div class="text-center text-secondary">Unable to load quiz.</div>`;
                 return;
             }
 
@@ -651,54 +806,56 @@
 
             const q = quizState.questions[quizState.currentQuestionIndex];
             quizPanel.innerHTML = `
-                <div class="flex-grow flex flex-col">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-lg text-accent">Multiple Choice Quiz</h3>
-                        <p class="text-sm text-secondary">${quizState.currentQuestionIndex + 1} / ${quizState.questions.length}</p>
+                <div class="mb-6 flex justify-between items-end border-b border-themed pb-4">
+                    <div>
+                        <span class="text-xs uppercase tracking-wider text-secondary font-bold">Question ${quizState.currentQuestionIndex + 1} of ${quizState.questions.length}</span>
+                        <h3 class="text-xl font-bold text-primary mt-1">Test your knowledge</h3>
                     </div>
-                    <p class="text-secondary mb-4 h-24 overflow-y-auto">${q.question}</p>
-                    <div id="quiz-options" class="space-y-2">
-                        ${q.options.map((opt, i) => `<button data-index="${i}" class="quiz-option w-full text-left p-3 bg-tertiary hover-bg-tertiary rounded-md transition-colors">${opt}</button>`).join('')}
-                    </div>
+                    <div class="text-accent font-mono font-bold text-lg">${quizState.score} pts</div>
                 </div>
-                <div id="quiz-feedback" class="mt-4"></div>
+                
+                <p class="text-lg text-primary mb-8 font-medium">${q.question}</p>
+                
+                <div class="grid gap-3 mb-6">
+                    ${q.options.map((opt, i) => `
+                        <button data-index="${i}" class="quiz-option text-left p-4 rounded-xl border border-themed bg-tertiary hover:border-accent hover:bg-secondary transition-all duration-200 font-medium text-secondary relative overflow-hidden group">
+                            <span class="relative z-10">${opt}</span>
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="quiz-feedback" class="min-h-[100px]"></div>
             `;
 
-            const optionButtons = quizPanel.querySelectorAll('.quiz-option');
-            optionButtons.forEach(btn => btn.addEventListener('click', handleOptionSelect));
+            quizPanel.querySelectorAll('.quiz-option').forEach(btn => btn.addEventListener('click', handleOptionSelect));
         }
-        
+
         function handleOptionSelect(e) {
-            const selectedButton = e.target;
-            const selectedIndex = parseInt(selectedButton.dataset.index);
+            const btn = e.target.closest('button');
+            const idx = parseInt(btn.dataset.index);
             const q = quizState.questions[quizState.currentQuestionIndex];
-            const isCorrect = q.options[selectedIndex] === q.answer;
+            const isCorrect = q.options[idx] === q.answer;
 
-            if (isCorrect) {
-                quizState.score++;
-            }
+            if (isCorrect) quizState.score += 10;
 
-            const optionButtons = document.querySelectorAll('.quiz-option');
-            optionButtons.forEach(btn => btn.disabled = true);
+            const buttons = document.querySelectorAll('.quiz-option');
+            buttons.forEach(b => {
+                b.disabled = true;
+                if(q.options[parseInt(b.dataset.index)] === q.answer) b.classList.add('correct');
+                else if(b === btn && !isCorrect) b.classList.add('incorrect');
+            });
 
-            const correctIndex = q.options.indexOf(q.answer);
-            optionButtons[correctIndex].classList.add('correct');
-            if (!isCorrect) {
-                selectedButton.classList.add('incorrect');
-            }
-
-            showQuizFeedback(q.explanation);
-        }
-
-        function showQuizFeedback(explanation) {
-            const feedbackPanel = document.getElementById('quiz-feedback');
-            feedbackPanel.innerHTML = `
-                <div class="p-4 bg-tertiary/50 rounded-lg">
-                    <h4 class="font-bold text-accent mb-2">Explanation</h4>
-                    <p class="text-secondary text-sm">${explanation}</p>
+            document.getElementById('quiz-feedback').innerHTML = `
+                <div class="p-4 rounded-xl ${isCorrect ? 'bg-green-500/10 border-green-500/20' : 'bg-red-500/10 border-red-500/20'} border animate-pulse">
+                    <p class="font-bold ${isCorrect ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} mb-1">
+                        ${isCorrect ? 'Correct!' : 'Incorrect'}
+                    </p>
+                    <p class="text-sm text-secondary">${q.explanation}</p>
                 </div>
-                <button id="next-q-btn" class="mt-4 w-full bg-accent hover:bg-cyan-500 text-primary font-bold py-2 px-4 rounded-md transition-colors">Next</button>
+                <button id="next-q-btn" class="mt-4 w-full btn-primary py-3 rounded-lg font-bold shadow-lg">
+                    ${quizState.currentQuestionIndex === quizState.questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
+                </button>
             `;
+            
             document.getElementById('next-q-btn').addEventListener('click', () => {
                 quizState.currentQuestionIndex++;
                 renderQuiz();
@@ -706,108 +863,45 @@
         }
 
         function renderScoreboard() {
+            const percentage = Math.round((quizState.score / (quizState.questions.length * 10)) * 100);
             const quizPanel = document.getElementById('quiz-panel');
-            const finalScore = Math.round((quizState.score / quizState.questions.length) * 100);
+            
+            let message = "Keep practicing!";
+            if (percentage >= 80) message = "Outstanding!";
+            else if (percentage >= 60) message = "Good job!";
+
             quizPanel.innerHTML = `
-                <div class="text-center flex-grow flex flex-col justify-center items-center">
-                    <h3 class="text-2xl font-bold text-accent">Quiz Complete!</h3>
-                    <p class="text-secondary mt-4">Your Score:</p>
-                    <p class="text-6xl font-bold text-primary my-2">${finalScore}<span class="text-3xl text-secondary">/100</span></p>
-                    <div class="flex gap-4 mt-6">
-                        <button id="retake-quiz-btn" class="bg-tertiary hover:bg-cyan-700 text-primary font-bold py-2 px-6 rounded-md transition-colors">Retake Quiz</button>
-                        <button id="new-quiz-btn" class="bg-accent hover:bg-cyan-500 text-primary font-bold py-2 px-6 rounded-md transition-colors">New Quiz</button>
+                <div class="text-center py-10 fade-in">
+                    <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-tertiary mb-6 relative">
+                        <svg class="w-24 h-24 absolute top-0 left-0 transform -rotate-90 text-transparent" viewBox="0 0 100 100">
+                             <circle cx="50" cy="50" r="45" fill="none" stroke="var(--bg-tertiary)" stroke-width="8" />
+                             <circle cx="50" cy="50" r="45" fill="none" stroke="var(--accent-primary)" stroke-width="8" stroke-dasharray="283" stroke-dashoffset="${283 - (283 * percentage / 100)}" stroke-linecap="round" />
+                        </svg>
+                        <span class="text-2xl font-bold text-primary">${percentage}%</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-fuchsia-500 mb-2">${message}</h2>
+                    <p class="text-secondary mb-8">You scored ${quizState.score} points</p>
+                    
+                    <div class="flex gap-4 justify-center">
+                        <button id="retake-quiz" class="btn-secondary py-2 px-6 rounded-lg">Retake</button>
+                        <button id="new-quiz" class="btn-primary py-2 px-6 rounded-lg">New Quiz</button>
                     </div>
                 </div>
             `;
-            document.getElementById('retake-quiz-btn').addEventListener('click', () => {
-                initializeQuiz(currentTopicCache.quiz);
-            });
-            document.getElementById('new-quiz-btn').addEventListener('click', () => {
-                handleTabClick('quiz', true);
-            });
-        }
-        
-        function getConceptHTMLSource() {
-            const contentHTML = document.querySelector('#modalContent .prose').innerHTML;
-            const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-            return `
-                <!DOCTYPE html>
-                <html lang="en" class="${theme}">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>${currentTopic} - Key Concepts</title>
-                    <script src="https://cdn.tailwindcss.com"><\/script>
-                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-                    <style>
-                        body {
-                            font-family: 'Inter', sans-serif;
-                            background-color: ${theme === 'dark' ? '#111827' : '#f9fafb'};
-                            color: ${theme === 'dark' ? '#f9fafb' : '#111827'};
-                            padding: 1rem;
-                        }
-                        .prose { max-width: 800px; margin: 2rem auto; }
-                        strong { color: ${theme === 'dark' ? '#f9fafb' : '#111827'}; }
-                        code { background-color: ${theme === 'dark' ? '#374151' : '#f3f4f6'}; color: ${theme === 'dark' ? '#22d3ee' : '#0e7490'}; border-radius: 4px; padding: 2px 4px;}
-                    </style>
-                </head>
-                <body>
-                    <div class="prose">
-                        <h1>${currentTopic} - Key Concepts</h1>
-                        ${contentHTML}
-                    </div>
-                </body>
-                </html>
-            `;
-        }
-
-        function copyConceptHTML() {
-            const htmlSource = getConceptHTMLSource();
-            const copyButton = document.getElementById('copy-html-btn');
-            const originalText = copyButton.innerHTML;
-
-            const textArea = document.createElement("textarea");
-            textArea.value = htmlSource;
-            textArea.style.position = "fixed";
-            textArea.style.top = 0;
-            textArea.style.left = 0;
-            textArea.style.opacity = 0;
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                copyButton.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
-                    Copied!
-                `;
-            } catch (err) {
-                showError('Oops, unable to copy');
-            }
-            document.body.removeChild(textArea);
             
-            setTimeout(() => { copyButton.innerHTML = originalText; }, 2000);
+            document.getElementById('retake-quiz').addEventListener('click', () => initializeQuiz(currentTopicCache.quiz));
+            document.getElementById('new-quiz').addEventListener('click', () => handleTabClick('quiz', true));
         }
 
-
-        function generateConceptHTML() {
-            const html = getConceptHTMLSource();
-            const blob = new Blob([html], { type: 'text/html' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `${currentTopic}_Concepts.html`;
-            a.click();
-            URL.revokeObjectURL(a.href);
-        }
-
-        // --- Event Handlers & Logic ---
+        // --- Core Navigation ---
         async function loadRoadmap(tech) {
             currentTechnology = tech;
             techSelection.classList.add('hidden');
             errorMessage.classList.add('hidden');
-            showLoader(true, `Generating roadmap for ${tech}...`);
+            showLoader(true, `Architecting your ${tech} path...`);
+            
             try {
-                const prompt = technologies[tech];
+                const prompt = technologies[tech]; 
                 const topics = await fetchWithExponentialBackoff(prompt, true);
                 renderRoadmap(topics);
                 roadmapContainer.classList.remove('hidden');
@@ -821,102 +915,116 @@
 
         function handleTopicClick(topic) {
             currentTopic = topic;
-            currentTopicCache = {};
             modalTitle.textContent = topic;
             updateMarkCompleteButton();
             contentModal.classList.remove('hidden');
+            
+            // Tab reset
+            [conceptTab, practiceTab, quizTab].forEach(t => t.classList.replace('border-accent', 'border-transparent'));
+            [conceptTab, practiceTab, quizTab].forEach(t => t.classList.remove('text-accent'));
+            
             handleTabClick('concept');
         }
 
         async function handleTabClick(tabName, forceRefresh = false) {
-            [conceptTab, practiceTab, quizTab].forEach(tab => {
-                tab.classList.remove('bg-tertiary', 'text-primary');
-                tab.classList.add('text-secondary');
+            // UI Update
+            const tabs = { 'concept': conceptTab, 'practice': practiceTab, 'quiz': quizTab };
+            Object.values(tabs).forEach(t => {
+                t.classList.replace('border-accent', 'border-transparent');
+                t.classList.remove('text-accent');
+                t.classList.add('text-secondary');
             });
-            const activeTab = document.getElementById(`${tabName}Tab`);
-            activeTab.classList.add('bg-tertiary', 'text-primary');
-            activeTab.classList.remove('text-secondary');
+            
+            tabs[tabName].classList.replace('border-transparent', 'border-accent');
+            tabs[tabName].classList.add('text-accent');
+            tabs[tabName].classList.remove('text-secondary');
 
-            if (tabName === 'quiz') {
-                modalContainer.classList.remove('max-w-7xl', 'max-w-5xl');
-                modalContainer.classList.add('max-w-3xl');
-            } else {
-                modalContainer.classList.remove('max-w-3xl');
-                modalContainer.classList.add('max-w-5xl');
+            // --- Cache Check ---
+            // Structure: contentCache[currentTechnology][currentTopic][tabName]
+            if (!contentCache[currentTechnology]) contentCache[currentTechnology] = {};
+            if (!contentCache[currentTechnology][currentTopic]) contentCache[currentTechnology][currentTopic] = {};
+
+            if (forceRefresh) {
+                 contentCache[currentTechnology][currentTopic][tabName] = null;
+                 // Clear quiz state if refreshing quiz
+                 if(tabName === 'quiz') quizState = {};
             }
 
-            if (forceRefresh) currentTopicCache[tabName] = null;
+            const cachedData = contentCache[currentTechnology][currentTopic][tabName];
 
-            if (currentTopicCache[tabName]) {
-                if(tabName === 'concept') renderContent(currentTopicCache.concept);
-                else if (tabName === 'practice') renderIDE(currentTopicCache.practice);
-                else renderQuizContainer(currentTopicCache.quiz);
+            if (cachedData) {
+                if (tabName === 'concept') renderContent(cachedData);
+                else if (tabName === 'practice') renderIDE(cachedData);
+                else renderQuizContainer(cachedData);
                 return;
             }
 
-            modalContent.innerHTML = `<div class="text-center p-8"><div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-500"></div><p class="mt-2 text-secondary">Generating content...</p></div>`;
+            // --- No Cache, Fetch New ---
+            modalContent.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-64 gap-4 text-secondary">
+                    <div class="animate-spin rounded-full h-8 w-8 border-2 border-accent border-t-transparent"></div>
+                    <p>Generating new content...</p>
+                </div>`;
 
             try {
                 let prompt = '';
+                let data = null;
+
                 if (tabName === 'concept') {
-                    if (monacoEditorInstance) { monacoEditorInstance.dispose(); monacoEditorInstance = null; }
-                    prompt = `Explain the concept of "${currentTopic}" in ${currentTechnology} for a beginner. Use clear language, provide code examples in markdown format where applicable, and explain what each part of the code does.`;
-                    const concept = await fetchWithExponentialBackoff(prompt);
-                    currentTopicCache.concept = concept;
-                    renderContent(concept);
+                     if (monacoEditorInstance) { monacoEditorInstance.dispose(); monacoEditorInstance = null; }
+                    prompt = `Explain "${currentTopic}" in ${currentTechnology} for a developer. Use clean markdown. Include code examples with fences (e.g., \`\`\`javascript). Focus on "What", "Why", "How". Also include a small section at the end called "Resources" with search terms or official doc references.`;
+                    data = await fetchWithExponentialBackoff(prompt);
+                    renderContent(data);
                 } else if (tabName === 'practice') {
-                    prompt = `Generate a beginner-level coding practice problem for "${currentTopic}" in ${currentTechnology}. The problem should test a core concept. Provide a JSON object with three keys: "problem" (a string describing the task), "hint" (a string with a helpful hint), and "solution" (a string containing the complete code solution).`;
-                    const practiceData = await fetchWithExponentialBackoff(prompt, true);
-                    currentTopicCache.practice = practiceData;
-                    renderIDE(practiceData);
+                    prompt = `Create a unique coding challenge for "${currentTopic}" in ${currentTechnology}. Return ONLY a JSON object: { "problem": "Description", "hint": "Brief hint", "solution": "Full code" }.`;
+                    data = await fetchWithExponentialBackoff(prompt, true);
+                    renderIDE(data);
                 } else if (tabName === 'quiz') {
-                    if (monacoEditorInstance) { monacoEditorInstance.dispose(); monacoEditorInstance = null; }
-                    prompt = `Generate a 15-question multiple-choice quiz for "${currentTopic}" in ${currentTechnology}. The questions should test fundamental and important concepts. Provide a JSON array of objects, where each object has "question" (string), "options" (an array of 4 strings), "answer" (a string that matches one of the options), and "explanation" (a detailed string explaining the correct answer).`;
-                    const quizData = await fetchWithExponentialBackoff(prompt, true);
-                    currentTopicCache.quiz = quizData;
-                    renderQuizContainer(quizData);
+                     if (monacoEditorInstance) { monacoEditorInstance.dispose(); monacoEditorInstance = null; }
+                    prompt = `Create a 5-question multiple choice quiz for "${currentTopic}" in ${currentTechnology}. Return ONLY a JSON array: [{ "question": "...", "options": ["A","B","C","D"], "answer": "Option Text", "explanation": "..." }]`;
+                    data = await fetchWithExponentialBackoff(prompt, true);
+                    renderQuizContainer(data);
                 }
+                
+                // Save to Cache
+                contentCache[currentTechnology][currentTopic][tabName] = data;
+                saveContentCache();
+
             } catch (error) {
-                modalContent.innerHTML = `<div class="text-red-400">Failed to load content: ${error.message}</div>`;
-            }
-        }
-        
-        function showTechSelectionScreen() {
-            roadmapContainer.classList.add('hidden');
-            techSelection.classList.remove('hidden');
-        }
-
-        function handleCloseModal() {
-            contentModal.classList.add('hidden');
-            if (monacoEditorInstance) {
-                monacoEditorInstance.dispose();
-                monacoEditorInstance = null;
+                modalContent.innerHTML = `<div class="text-center text-red-400 p-8">Error: ${error.message} <br><button onclick="document.getElementById('regenerateBtn').click()" class="mt-4 underline">Try Again</button></div>`;
             }
         }
 
-        // --- Initial Setup ---
-        function main() {
+        // --- Init ---
+        function init() {
             const savedTheme = localStorage.getItem('theme') || 'dark';
             applyTheme(savedTheme);
+            loadSettings();
             renderTechSelection();
-            initializeFirebase();
+            
+            if (!apiKey) {
+                setTimeout(() => {
+                    settingsModal.classList.remove('hidden');
+                }, 500);
+            }
         }
 
+        // Event Listeners
         themeToggle.addEventListener('click', handleThemeToggle);
         backButton.addEventListener('click', showTechSelectionScreen);
-        closeModalButton.addEventListener('click', handleCloseModal);
+        closeModalButton.addEventListener('click', () => { contentModal.classList.add('hidden'); if(monacoEditorInstance) monacoEditorInstance.dispose(); });
+        markCompleteBtn.addEventListener('click', handleMarkAsComplete);
         conceptTab.addEventListener('click', () => handleTabClick('concept'));
         practiceTab.addEventListener('click', () => handleTabClick('practice'));
         quizTab.addEventListener('click', () => handleTabClick('quiz'));
-        markCompleteBtn.addEventListener('click', handleMarkAsComplete);
         
         techSelection.addEventListener('click', (e) => {
-            const button = e.target.closest('button[data-tech]');
-            if (button) loadRoadmap(button.dataset.tech);
+            const btn = e.target.closest('button[data-tech]');
+            if (btn) loadRoadmap(btn.dataset.tech);
         });
-        
-        window.addEventListener('DOMContentLoaded', main);
-        
+
+        init();
+
     </script>
 </body>
 </html>
